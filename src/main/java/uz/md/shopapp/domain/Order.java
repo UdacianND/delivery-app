@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.LastModifiedBy;
 import uz.md.shopapp.domain.enums.OrderStatus;
 import uz.md.shopapp.domain.template.AbsLongEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,9 +28,6 @@ public class Order extends AbsLongEntity {
     @JoinColumn(nullable = false)
     private User user;
 
-    @LastModifiedBy
-    private Long updatedById;
-
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status = OrderStatus.PREPARING;
 
@@ -39,6 +37,10 @@ public class Order extends AbsLongEntity {
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     @ToString.Include
     private List<OrderProduct> orderProducts;
+
+    private LocalDateTime deliveryTime;
+
+    private Double deliveryPrice;
 
     private Double overallPrice;
 

@@ -36,5 +36,17 @@ app:
   running: dev
   admin:
     firstName: "MuhammadQodir"
+    lastName: "Yusupov"
     phoneNumber: "+998931668648"
     password: "123"
+  role:
+    admin:
+      name: "ADMIN"
+      description: "System administrator"
+    manager:
+      name: "MANAGER"
+      description: "System Manager"
+    client:
+      name: "CLIENT"
+      description: "System client"
+ó

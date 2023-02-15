@@ -23,7 +23,7 @@
 //import static org.mockito.Mockito.when;
 //import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//import static uz.md.shopapp.controller.AuthController.*;
+//import static uz.md.shopapp.controller.AuthResource.*;
 ///**
 // * Integration tests for {@link AuthController}
 // */

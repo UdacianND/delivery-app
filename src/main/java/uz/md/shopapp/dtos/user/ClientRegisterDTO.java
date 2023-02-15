@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class UserRegisterDTO {
+public class ClientRegisterDTO {
 
     private String firstName;
 

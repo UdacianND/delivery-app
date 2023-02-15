@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.mapstruct.control.MappingControl;
 import uz.md.shopapp.domain.template.AbsLongEntity;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class Institution extends AbsLongEntity {
     private List<Category> categories;
 
     @OneToOne
-    private Employee manager;
+    private User manager;
 
     @Override
     public boolean equals(Object o) {

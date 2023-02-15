@@ -1,10 +1,9 @@
-package uz.md.shopapp.controller;
+package uz.md.shopapp.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import uz.md.shopapp.aop.annotation.CheckAuth;
 import uz.md.shopapp.domain.enums.PermissionEnum;
@@ -19,10 +18,10 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(CategoryController.BASE_URL + "/")
+@RequestMapping(CategoryResource.BASE_URL + "/")
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryController {
+public class CategoryResource {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "category";
     private final CategoryService categoryService;
@@ -93,6 +92,5 @@ public class CategoryController {
         log.info("Deleting category by id {}", id);
         return categoryService.delete(id);
     }
-
 
 }

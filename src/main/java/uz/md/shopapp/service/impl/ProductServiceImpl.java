@@ -2,11 +2,10 @@ package uz.md.shopapp.service.impl;
 
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import uz.md.shopapp.domain.Category;
 import uz.md.shopapp.domain.Product;
+import uz.md.shopapp.domain.User;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.product.ProductAddDTO;
 import uz.md.shopapp.dtos.product.ProductDTO;
@@ -14,12 +13,14 @@ import uz.md.shopapp.dtos.product.ProductEditDTO;
 import uz.md.shopapp.dtos.request.SimpleSearchRequest;
 import uz.md.shopapp.dtos.request.SimpleSortRequest;
 import uz.md.shopapp.exceptions.AlreadyExistsException;
+import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.ProductMapper;
 import uz.md.shopapp.repository.CategoryRepository;
 import uz.md.shopapp.repository.ProductRepository;
 import uz.md.shopapp.service.QueryService;
 import uz.md.shopapp.service.contract.ProductService;
+import uz.md.shopapp.utils.CommonUtils;
 
 import java.util.List;
 
@@ -50,6 +51,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ApiResult<ProductDTO> add(ProductAddDTO dto) {
 
+        Long managerId = categoryRepository.findMangerIdByCategoryId(dto.getCategoryId());
+
+        User currentUser = CommonUtils.getCurrentUser();
+
+        if (!currentUser.getRole().getName().equals("ADMIN"))
+            if (!currentUser.getId().equals(managerId))
+                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+
         if (productRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
             throw new AlreadyExistsException("PRODUCT_NAME_ALREADY_EXISTS");
 
@@ -68,6 +77,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ApiResult<ProductDTO> edit(ProductEditDTO editDTO) {
+
+        Long managerId = categoryRepository.findMangerIdByCategoryId(editDTO.getCategoryId());
+
+        User currentUser = CommonUtils.getCurrentUser();
+
+        if (!currentUser.getRole().getName().equals("ADMIN"))
+            if (!currentUser.getId().equals(managerId))
+                throw new NotAllowedException("YOU HAVE NO PERMISSION");
 
         Product product = productRepository
                 .findById(editDTO.getId())
@@ -91,6 +108,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ApiResult<Void> delete(Long id) {
+
+        Long managerId = productRepository.findMangerIdByProductId(id);
+
+        User currentUser = CommonUtils.getCurrentUser();
+
+        if (!currentUser.getRole().getName().equals("ADMIN"))
+            if (!currentUser.getId().equals(managerId))
+                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+
+
         if (!productRepository.existsById(id))
             throw new NotFoundException("PRODUCT_DOES_NOT_EXIST");
         productRepository.deleteById(id);

@@ -7,4 +7,6 @@ public interface UserService {
     ApiResult<UserDTO> findById(Long id);
 
     ApiResult<Void> delete(Long id);
+
+    ApiResult<UserDTO> me();
 }

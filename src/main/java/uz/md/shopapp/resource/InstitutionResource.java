@@ -1,4 +1,4 @@
-package uz.md.shopapp.controller;
+package uz.md.shopapp.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -18,10 +18,10 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(InstitutionController.BASE_URL + "/")
+@RequestMapping(InstitutionResource.BASE_URL + "/")
 @RequiredArgsConstructor
 @Slf4j
-public class InstitutionController {
+public class InstitutionResource {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "institution";
 

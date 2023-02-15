@@ -16,7 +16,7 @@ Optional:
 
 ##### Clone source code from git
 ```
-
+git clone https://gitlab.com/yusupovlab/delivery-app.git
 ```
 
 ##### Build Docker image

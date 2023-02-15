@@ -1,4 +1,4 @@
-package uz.md.shopapp.controller;
+package uz.md.shopapp.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -19,10 +19,10 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(ProductController.BASE_URL + "/")
+@RequestMapping(ProductResource.BASE_URL + "/")
 @RequiredArgsConstructor
 @Slf4j
-public class ProductController {
+public class ProductResource {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "product";
     private final ProductService productService;

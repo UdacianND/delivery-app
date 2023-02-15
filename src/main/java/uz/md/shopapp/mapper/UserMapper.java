@@ -2,11 +2,10 @@ package uz.md.shopapp.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import uz.md.shopapp.domain.User;
+import uz.md.shopapp.dtos.user.ClientRegisterDTO;
 import uz.md.shopapp.dtos.user.UserDTO;
-import uz.md.shopapp.dtos.user.UserRegisterDTO;
 
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -17,6 +16,6 @@ public interface UserMapper extends EntityMapper<User, UserDTO> {
     @Mapping(target = "permissions", source = "role.permissions")
     UserDTO toDTO(User entity);
 
-    User fromAddDTO(UserRegisterDTO dto);
+    User fromAddDTO(ClientRegisterDTO dto);
 
 }

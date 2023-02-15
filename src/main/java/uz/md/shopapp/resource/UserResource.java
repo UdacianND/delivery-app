@@ -1,4 +1,4 @@
-package uz.md.shopapp.controller;
+package uz.md.shopapp.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,9 @@ import uz.md.shopapp.service.contract.UserService;
 import uz.md.shopapp.utils.AppConstants;
 
 @RestController
-@RequestMapping(UserController.BASE_URL + "/")
+@RequestMapping(UserResource.BASE_URL + "/")
 @RequiredArgsConstructor
-public class UserController {
+public class UserResource {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "user";
 
@@ -32,5 +32,7 @@ public class UserController {
     public ApiResult<Void> delete(@PathVariable Long id) {
         return userService.delete(id);
     }
+
+
 
 }

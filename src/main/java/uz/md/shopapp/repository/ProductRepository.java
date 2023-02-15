@@ -1,6 +1,7 @@
 package uz.md.shopapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.md.shopapp.domain.Product;
 
@@ -15,4 +16,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByCategory_Id(Long category_id);
 
+    @Query("select category.institution.manager.id from Product where id = :id")
+    Long findMangerIdByProductId(Long id);
 }

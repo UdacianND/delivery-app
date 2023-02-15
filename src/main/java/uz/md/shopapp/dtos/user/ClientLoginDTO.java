@@ -9,12 +9,12 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class UserLoginDTO {
+public class ClientLoginDTO {
 
     @NotBlank(message = "PhoneNumber can't be empty")
     private String phoneNumber;
 
-    @NotBlank(message = "Sms code can't be empty")
+    @NotBlank(message = "sms code can't be empty")
     private String smsCode;
 
 }

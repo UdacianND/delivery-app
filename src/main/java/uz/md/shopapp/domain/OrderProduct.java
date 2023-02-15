@@ -17,14 +17,11 @@ import uz.md.shopapp.domain.template.AbsLongEntity;
 @Table
 @Builder
 @Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE order_product SET deleted = true where id = ?")
 public class OrderProduct {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private boolean deleted;
 
     @ManyToOne
     @JoinColumn(nullable = false)

@@ -1,4 +1,4 @@
-package uz.md.shopapp.controller;
+package uz.md.shopapp.resource;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +14,9 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = RoleController.BASE_URL)
+@RequestMapping(value = RoleResource.BASE_URL)
 @RequiredArgsConstructor
-public class RoleController {
+public class RoleResource {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "role/";
     private final RoleService roleService;

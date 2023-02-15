@@ -1,7 +1,7 @@
 package uz.md.shopapp.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uz.md.shopapp.controller.AuthController;
+import uz.md.shopapp.resource.AuthResource;
 
 public interface AppConstants {
 
@@ -11,10 +11,10 @@ public interface AppConstants {
 
     String AUTHORIZATION_HEADER = "Authorization";
 
-    String AUTHENTICATION_HEADER = "Authorization";
+    String AUTHENTICATION_HEADER = "Authentication";
 
     String[] OPEN_PAGES = {
-            AuthController.BASE_URL + "/**"
+            AuthResource.BASE_URL + "/**"
     };
 
     String[] SWAGGER_PAGES = {

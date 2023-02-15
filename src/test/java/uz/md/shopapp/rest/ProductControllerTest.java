@@ -39,8 +39,8 @@
 //import static org.mockito.Mockito.when;
 //import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-//import static uz.md.shopapp.controller.AuthController.LOGIN_URL;
-//import static uz.md.shopapp.controller.ProductController.BASE_URL;
+//import static uz.md.shopapp.controller.AuthResource.LOGIN_URL;
+//import static uz.md.shopapp.controller.ProductResource.BASE_URL;
 //
 ///**
 // * Integration tests for {@link ProductController}
@@ -124,7 +124,7 @@
 //
 //        ResultActions result
 //                = mvc.perform(MockMvcRequestBuilders
-//                        .post(AuthController.BASE_URL + LOGIN_URL)
+//                        .post(AuthResource.BASE_URL + LOGIN_URL)
 //                        .contentType(MediaType.APPLICATION_JSON)
 //                        .content(TestUtil.convertObjectToJsonBytes(userLoginDTO)))
 //                .andExpect(status().isOk())

@@ -34,8 +34,11 @@ public class User extends AbsLongEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    private String smsCode;
-    private LocalDateTime codeGivenTime;
+    // smsCode if user is client
+    private String password;
+
+    // we check if user is client we don't check if user is not client
+    private LocalDateTime codeValidTill;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Include
@@ -44,12 +47,12 @@ public class User extends AbsLongEntity implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     private Role role;
 
-    public User(String firstName, String lastName, String phoneNumber, String smsCode, Role role) {
+    public User(String firstName, String lastName, String phoneNumber, String password, Role role) {
         super.setActive(true);
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.smsCode = smsCode;
+        this.password = password;
         this.role = role;
     }
 
@@ -77,7 +80,7 @@ public class User extends AbsLongEntity implements UserDetails {
 
     @Override
     public String getPassword() {
-        return smsCode;
+        return password;
     }
 
     @Override

@@ -38,7 +38,7 @@ public abstract class AbsLongEntity {
     @Column(updatable = false, nullable = false)
     private LocalDateTime updatedAt;
 
-    private boolean deleted;
+    private boolean deleted = false;
 
-    private boolean active;
+    private boolean active = true;
 }
