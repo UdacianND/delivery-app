@@ -1,6 +1,7 @@
 package uz.md.shopapp.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping(ProductResource.BASE_URL + "/")
 @RequiredArgsConstructor
+@Tag(name = "Product", description = "Endpoints for Product")
 @Slf4j
 public class ProductResource {
 

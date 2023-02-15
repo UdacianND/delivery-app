@@ -1,6 +1,7 @@
 package uz.md.shopapp.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import uz.md.shopapp.aop.annotation.CheckAuth;
 import uz.md.shopapp.domain.enums.PermissionEnum;
 import uz.md.shopapp.dtos.ApiResult;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeAddDTO;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeDTO;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeEditDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeAddDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeEditDTO;
 import uz.md.shopapp.service.contract.InstitutionTypeService;
 import uz.md.shopapp.utils.AppConstants;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping(InstitutionTypeResource.BASE_URL + "/")
 @RequiredArgsConstructor
+@Tag(name = "InstitutionType", description = "Endpoints for InstitutionType")
 @Slf4j
 public class InstitutionTypeResource {
 

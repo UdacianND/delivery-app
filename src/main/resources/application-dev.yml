@@ -49,4 +49,6 @@ app:
     client:
       name: "CLIENT"
       description: "System client"
-ó
+  sms:
+    valid_till: 15
+    valid_till_in: MINUTES

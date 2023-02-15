@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import uz.md.shopapp.dtos.address.AddressAddDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class OrderAddDTO {
     private UUID userId;
     private AddressAddDTO address;
     private Long addressId;
-    private Double overallPrice;
+    private LocalDateTime deliveryTime;
 
     @NotNull(message = "ordered products must not be null")
     private List<OrderProductAddDTO> orderProducts;

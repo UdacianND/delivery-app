@@ -13,9 +13,7 @@ import uz.md.shopapp.aop.annotation.CheckAuth;
 import uz.md.shopapp.config.security.JwtAuthenticationFilter;
 import uz.md.shopapp.domain.User;
 import uz.md.shopapp.domain.enums.PermissionEnum;
-import uz.md.shopapp.dtos.user.UserDTO;
 import uz.md.shopapp.exceptions.NotAllowedException;
-import uz.md.shopapp.mapper.UserMapper;
 import uz.md.shopapp.utils.AppConstants;
 import uz.md.shopapp.utils.CommonUtils;
 
@@ -32,7 +30,6 @@ import static uz.md.shopapp.utils.CommonUtils.currentRequest;
 @RequiredArgsConstructor
 public class CheckAuthAspect {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserMapper userMapper;
 
     @Before(value = "@annotation(checkAuth)")
     public void checkAuthExecutor(CheckAuth checkAuth) {
@@ -50,12 +47,11 @@ public class CheckAuthAspect {
 
         if (userFromBearerToken != null && userFromBearerToken.getId() != null) {
 
-            UserDTO userDTO = userMapper.toDTO(userFromBearerToken);
             PermissionEnum[] permission = checkAuth.permission();
-            if (permission.length > 0 && notPermission(userDTO.getPermissions(), permission)) {
+            if (permission.length > 0 && notPermission(userFromBearerToken.getRole().getPermissions(), permission)) {
                 throw new NotAllowedException("FORBIDDEN");
             }
-            httpServletRequest.setAttribute(AppConstants.REQUEST_ATTRIBUTE_CURRENT_USER, userDTO);
+            httpServletRequest.setAttribute(AppConstants.REQUEST_ATTRIBUTE_CURRENT_USER, userFromBearerToken);
         } else
             throw new NotAllowedException("FORBIDDEN");
     }
@@ -79,16 +75,6 @@ public class CheckAuthAspect {
         }
         for (PermissionEnum permissionEnum : mustPermission) {
             if (hasPermission.contains(permissionEnum))
-                return false;
-        }
-        return true;
-    }
-
-    private boolean notPermission(String permission, PermissionEnum[] mustPermission) {
-        if (permission == null || permission.isEmpty())
-            return true;
-        for (PermissionEnum permissionEnum : mustPermission) {
-            if (permission.contains(permissionEnum.name()))
                 return false;
         }
         return true;

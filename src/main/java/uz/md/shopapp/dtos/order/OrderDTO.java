@@ -6,8 +6,8 @@ import uz.md.shopapp.domain.enums.OrderStatus;
 import uz.md.shopapp.dtos.address.AddressDTO;
 import uz.md.shopapp.dtos.orderProduct.OrderProductDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +19,8 @@ public class OrderDTO {
     private Long userId;
     private OrderStatus status;
     private Double overallPrice;
+    private Double deliveryPrice;
+    private LocalDateTime deliveryTime;
     private AddressDTO address;
     private List<OrderProductDTO> orderProducts;
 }

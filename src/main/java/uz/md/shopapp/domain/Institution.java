@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.mapstruct.control.MappingControl;
 import uz.md.shopapp.domain.template.AbsLongEntity;
-
 import java.util.List;
 
 @AllArgsConstructor
@@ -23,12 +21,10 @@ public class Institution extends AbsLongEntity {
 
     @Column(nullable = false, unique = true)
     private String nameUz;
-
     @Column(nullable = false, unique = true)
     private String nameRu;
     private String descriptionUz;
     private String descriptionRu;
-
     private String imageUrl;
 
     @OneToOne

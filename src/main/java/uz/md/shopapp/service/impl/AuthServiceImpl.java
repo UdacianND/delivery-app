@@ -2,6 +2,7 @@ package uz.md.shopapp.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -16,8 +17,8 @@ import uz.md.shopapp.domain.User;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.TokenDTO;
 import uz.md.shopapp.dtos.user.ClientLoginDTO;
-import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
 import uz.md.shopapp.dtos.user.ClientRegisterDTO;
+import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
 import uz.md.shopapp.exceptions.ConflictException;
 import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotEnabledException;
@@ -56,6 +57,14 @@ public class AuthServiceImpl implements AuthService {
         this.roleRepository = roleRepository;
     }
 
+    @Value("${app.role.client.name}")
+    private String clientRoleName;
+
+    @Value("${app.sms.valid_till}")
+    private Long smsValidTill;
+
+    @Value("${app.sms.valid_till_in}")
+    private String smsValidTillIn;
 
     @Override
     public ApiResult<TokenDTO> loginClient(ClientLoginDTO dto) {
@@ -119,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userMapper.fromAddDTO(dto);
         Role role = roleRepository
-                .findByName("USER")
+                .findByName(clientRoleName)
                 .orElseThrow(() -> new NotFoundException("DEFAULT_ROLE_NOT_FOUND"));
         user.setActive(false);
         user.setRole(role);
@@ -135,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
         String smsCode = RandomStringUtils.random(4, false, true);
         user.setPassword(passwordEncoder.encode(smsCode));
         // TODO: 2/14/2023 sms valid till do not static
-        user.setCodeValidTill(LocalDateTime.now().plus(15, ChronoUnit.MINUTES));
+        user.setCodeValidTill(LocalDateTime.now().plus(smsValidTill, ChronoUnit.valueOf(smsValidTillIn)));
         userRepository.save(user);
         System.out.println("smsCode = " + smsCode);
         return ApiResult.successResponse("SMS code sent");

@@ -1,4 +1,4 @@
-package uz.md.shopapp.dtos.institutionType;
+package uz.md.shopapp.dtos.institution_type;
 
 import lombok.*;
 

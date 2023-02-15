@@ -1,21 +1,24 @@
 server:
-  port: 8080
+  port: 8090
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/shop_app_db_test
+    url: jdbc:postgresql://localhost:5432/deliveryapp_test
     username: postgres
     password: 2002
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create
     show-sql: true
     properties:
       hibernate:
-        cache:
-          use_second_level_cache: false
-          use_query_cache: false
         enable_lazy_load_no_trans: true
+
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
 
   mvc:
     pathmatch:
@@ -29,10 +32,23 @@ jwt:
     key: evjrkhertvuheruth84y574y587yvbrhvjrtvhrjthv3u4895vuntervnjtkejrht89545y
     expiration-time: 604800000
 
-
 app:
   running: test
   admin:
     firstName: "MuhammadQodir"
+    lastName: "Yusupov"
     phoneNumber: "+998931668648"
     password: "123"
+  role:
+    admin:
+      name: "ADMIN"
+      description: "System administrator"
+    manager:
+      name: "MANAGER"
+      description: "System Manager"
+    client:
+      name: "CLIENT"
+      description: "System client"
+  sms:
+    valid_till: 15
+    valid_till_in: MINUTES

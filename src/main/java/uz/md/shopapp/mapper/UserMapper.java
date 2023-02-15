@@ -9,7 +9,6 @@ import uz.md.shopapp.dtos.user.UserDTO;
 
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-
 public interface UserMapper extends EntityMapper<User, UserDTO> {
 
     @Override

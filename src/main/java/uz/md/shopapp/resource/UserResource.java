@@ -1,30 +1,29 @@
 package uz.md.shopapp.resource;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uz.md.shopapp.aop.annotation.CheckAuth;
 import uz.md.shopapp.domain.enums.PermissionEnum;
 import uz.md.shopapp.dtos.ApiResult;
-import uz.md.shopapp.dtos.user.UserDTO;
 import uz.md.shopapp.service.contract.UserService;
 import uz.md.shopapp.utils.AppConstants;
 
 @RestController
 @RequestMapping(UserResource.BASE_URL + "/")
 @RequiredArgsConstructor
+@Tag(name = "User", description = "Endpoints for User")
+@Slf4j
 public class UserResource {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "user";
 
     private final UserService userService;
-
-    @Operation(description = "get user by id")
-    @GetMapping("/{id}")
-    @CheckAuth(permission = PermissionEnum.GET_USER)
-    public ApiResult<UserDTO> getById(@PathVariable Long id) {
-        return userService.findById(id);
-    }
 
     @Operation(description = "delete a user")
     @DeleteMapping("/delete/{id}")
@@ -32,7 +31,6 @@ public class UserResource {
     public ApiResult<Void> delete(@PathVariable Long id) {
         return userService.delete(id);
     }
-
 
 
 }

@@ -14,5 +14,4 @@ public class OrderProductAddDTO {
     private Long productId;
     @NotNull(message = "order product quantity must not be null ")
     private Integer quantity;
-    private Double price;
 }

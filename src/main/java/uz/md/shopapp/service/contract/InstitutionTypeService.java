@@ -1,9 +1,9 @@
 package uz.md.shopapp.service.contract;
 
 import uz.md.shopapp.dtos.ApiResult;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeAddDTO;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeDTO;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeEditDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeAddDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeEditDTO;
 
 import java.util.List;
 

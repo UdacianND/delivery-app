@@ -3,9 +3,9 @@ package uz.md.shopapp.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import uz.md.shopapp.domain.InstitutionType;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeAddDTO;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeDTO;
-import uz.md.shopapp.dtos.institutionType.InstitutionTypeEditDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeAddDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeDTO;
+import uz.md.shopapp.dtos.institution_type.InstitutionTypeEditDTO;
 
 @Mapper(componentModel = "spring")
 public interface InstitutionTypeMapper extends EntityMapper<InstitutionType, InstitutionTypeDTO> {

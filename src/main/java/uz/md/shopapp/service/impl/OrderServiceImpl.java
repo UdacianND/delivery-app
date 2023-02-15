@@ -4,10 +4,7 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import uz.md.shopapp.domain.Address;
-import uz.md.shopapp.domain.Order;
-import uz.md.shopapp.domain.OrderProduct;
-import uz.md.shopapp.domain.User;
+import uz.md.shopapp.domain.*;
 import uz.md.shopapp.domain.enums.OrderStatus;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.order.OrderAddDTO;
@@ -88,7 +85,6 @@ public class OrderServiceImpl implements OrderService {
 
         order.setUser(user);
         order.setAddress(address);
-        order.setOverallPrice(dto.getOverallPrice());
         order.setActive(true);
         order.setDeleted(false);
         orderRepository.save(order);
@@ -96,18 +92,29 @@ public class OrderServiceImpl implements OrderService {
         for (OrderProductAddDTO addDTO : dto.getOrderProducts()) {
             OrderProduct orderProduct = orderProductMapper.fromAddDTO(addDTO);
             orderProduct.setOrder(order);
-            orderProduct.setProduct(productRepository
+            Product product = productRepository
                     .findById(addDTO.getProductId())
-                    .orElseThrow(() -> new NotFoundException("ORDER_PRODUCT_NOT_FOUND")));
+                    .orElseThrow(() -> new NotFoundException("ORDER_PRODUCT_NOT_FOUND"));
+            orderProduct.setProduct(product);
+            orderProduct.setPrice(product.getPrice() * addDTO.getQuantity());
             orderProductRepository.save(orderProduct);
             orderProducts.add(orderProduct);
         }
-
+        double overallPrice = sumOrderOverallPrice(orderProducts);
+        order.setOverallPrice(overallPrice);
         order.setOrderProducts(orderProducts);
 
         return ApiResult
                 .successResponse(orderMapper
                         .toDTO(order));
+    }
+
+    private double sumOrderOverallPrice(List<OrderProduct> orderProducts) {
+        double totalPrice = 0;
+        for (OrderProduct orderProduct : orderProducts) {
+            totalPrice += orderProduct.getPrice();
+        }
+        return totalPrice;
     }
 
     @Override
