@@ -1,6 +1,8 @@
 package uz.md.shopapp.service.impl;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.config.annotation.web.SecurityMarker;
 import org.springframework.stereotype.Service;
 import uz.md.shopapp.domain.InstitutionType;
 import uz.md.shopapp.dtos.ApiResult;
@@ -28,9 +30,10 @@ public class InstitutionTypeServiceImpl implements InstitutionTypeService {
     }
 
     @Override
-    public ApiResult<InstitutionTypeDTO> add(InstitutionTypeAddDTO dto) {
+    public ApiResult<InstitutionTypeDTO> add(@NotNull InstitutionTypeAddDTO dto) {
 
-        if (institutionTypeRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
+        if (institutionTypeRepository
+                .existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
             throw new AlreadyExistsException("INSTITUTION_NAME_ALREADY_EXISTS");
 
         return ApiResult
@@ -53,7 +56,7 @@ public class InstitutionTypeServiceImpl implements InstitutionTypeService {
 
         InstitutionType editing = institutionTypeRepository
                 .findById(editDTO.getId())
-                .orElseThrow(() -> new NotFoundException("INSTITUTION_NOT_FOUND"));
+                .orElseThrow(() -> new NotFoundException("INSTITUTION_TYPE_NOT_FOUND"));
 
         if (institutionTypeRepository.existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), editing.getId()))
             throw new AlreadyExistsException("INSTITUTION_NAME_ALREADY_EXISTS");

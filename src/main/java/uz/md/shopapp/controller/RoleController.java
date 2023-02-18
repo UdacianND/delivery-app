@@ -1,4 +1,4 @@
-package uz.md.shopapp.resource;
+package uz.md.shopapp.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,11 +16,11 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = RoleResource.BASE_URL)
+@RequestMapping(value = RoleController.BASE_URL)
 @RequiredArgsConstructor
 @Tag(name = "Role", description = "Endpoints for Role")
 @Slf4j
-public class RoleResource {
+public class RoleController {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "role/";
     private final RoleService roleService;

@@ -16,6 +16,7 @@ public class InstitutionDTO {
     private String imageUrl;
     private String descriptionUz;
     private String descriptionRu;
+    private Long institutionTypeId;
     private List<CategoryDTO> categories;
 
     public InstitutionDTO(Long id,

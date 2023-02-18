@@ -39,6 +39,15 @@ public class Institution extends AbsLongEntity {
     @OneToOne
     private User manager;
 
+    public Institution(String nameUz, String nameRu, String descriptionUz, String descriptionRu, InstitutionType type, User manager) {
+        this.nameUz = nameUz;
+        this.nameRu = nameRu;
+        this.descriptionUz = descriptionUz;
+        this.descriptionRu = descriptionRu;
+        this.type = type;
+        this.manager = manager;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

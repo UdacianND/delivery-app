@@ -20,11 +20,11 @@ public class InstitutionEditDTO extends InstitutionAddDTO {
 
     public InstitutionEditDTO(@NotBlank(message = "Category name must not be empty") String nameUz,
                               @NotBlank(message = "Category name must not be empty") String nameRu,
-                              MultipartFile image,
                               String descriptionUz,
                               String descriptionRu,
-                              Long id) {
-        super(nameUz, nameRu, image, descriptionUz, descriptionRu);
+                              Long id,
+                              Long institutionTypeId) {
+        super(nameUz, nameRu, descriptionUz, descriptionRu, institutionTypeId);
         this.id = id;
     }
 

@@ -2,8 +2,8 @@ package uz.md.shopapp.dtos.institution;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,14 +12,14 @@ import org.springframework.web.multipart.MultipartFile;
 @ToString
 public class InstitutionAddDTO {
 
-    @NotBlank(message = "Category name must not be empty")
+    @NotBlank(message = "Institution name must not be empty")
     private String nameUz;
 
-    @NotBlank(message = "Category name must not be empty")
+    @NotBlank(message = "Institution name must not be empty")
     private String nameRu;
-
-    private MultipartFile image;
-
     private String descriptionUz;
     private String descriptionRu;
+
+    @NotNull(message = "Institution type id must not be null")
+    private Long institutionTypeId;
 }

@@ -1,4 +1,4 @@
-package uz.md.shopapp.resource;
+package uz.md.shopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(OrderResource.BASE_URL + "/")
+@RequestMapping(OrderController.BASE_URL + "/")
 @RequiredArgsConstructor
 @Tag(name = "Order", description = "Endpoints for Order")
 @Slf4j
-public class OrderResource {
+public class OrderController {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "order";
 

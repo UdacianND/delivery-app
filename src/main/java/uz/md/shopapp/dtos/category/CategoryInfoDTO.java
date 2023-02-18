@@ -13,4 +13,5 @@ public class CategoryInfoDTO {
     private String nameRu;
     private String descriptionUz;
     private String descriptionRu;
+    private Long institutionId;
 }

@@ -19,8 +19,6 @@ public class ProductAddDTO {
 
     @NotBlank(message = "Product name must not be empty")
     private String nameRu;
-    @JsonIgnore
-    private MultipartFile image;
     private String descriptionUz;
     private String descriptionRu;
 

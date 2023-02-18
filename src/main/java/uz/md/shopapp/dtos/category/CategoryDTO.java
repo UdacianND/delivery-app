@@ -16,6 +16,7 @@ public class CategoryDTO {
     private String nameRu;
     private String descriptionUz;
     private String descriptionRu;
+    private Long institutionId;
     private List<ProductDTO> products;
 
     public CategoryDTO(String nameUz, String nameRu, String descriptionUz, String descriptionRu) {

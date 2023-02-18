@@ -10,8 +10,8 @@ import lombok.*;
 public class InstitutionTypeDTO {
     private Long id;
     private String nameUz;
-private String nameRu;
-private String descriptionUz;
+    private String nameRu;
+    private String descriptionUz;
     private String descriptionRu;
 
 

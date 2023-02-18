@@ -14,4 +14,6 @@ public class InstitutionInfoDTO {
     private String imageUrl;
     private String descriptionUz;
     private String descriptionRu;
+    private Long institutionTypeId;
+    private Long managerId;
 }

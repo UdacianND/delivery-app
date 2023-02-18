@@ -56,6 +56,13 @@ public class User extends AbsLongEntity implements UserDetails {
         this.role = role;
     }
 
+    public User(String firstName, String lastName, String phoneNumber, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+    }
+
 
     @Override
     public boolean equals(Object o) {

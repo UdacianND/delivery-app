@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 public class ClientRegisterDTO {
 
+    @NotBlank(message = "First name is required")
     private String firstName;
 
     private String lastName;

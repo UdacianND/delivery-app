@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.md.shopapp.config.security.JwtTokenProvider;
 import uz.md.shopapp.domain.Role;
 import uz.md.shopapp.domain.User;
@@ -19,6 +20,7 @@ import uz.md.shopapp.dtos.TokenDTO;
 import uz.md.shopapp.dtos.user.ClientLoginDTO;
 import uz.md.shopapp.dtos.user.ClientRegisterDTO;
 import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
+import uz.md.shopapp.dtos.user.EmployeeRegisterDTO;
 import uz.md.shopapp.exceptions.ConflictException;
 import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotEnabledException;
@@ -90,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Employee login method called: " + dto);
 
-        User user = authenticate(dto.getPhoneNumber(), dto.getPhoneNumber());
+        User user = authenticate(dto.getPhoneNumber(), dto.getPassword());
 
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
         String accessToken = jwtTokenProvider.generateAccessToken(user, Timestamp.valueOf(tokenIssuedAt));
@@ -98,8 +100,28 @@ public class AuthServiceImpl implements AuthService {
 
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
 
-        return ApiResult.successResponse(
-                tokenDTO);
+        return ApiResult
+                .successResponse(tokenDTO);
+
+    }
+
+    @Override
+    public ApiResult<Void> registerEmployee(EmployeeRegisterDTO dto) {
+        log.info("Employee registration with " + dto);
+
+        if (userRepository.existsByPhoneNumber(dto.getPhoneNumber()))
+            throw new ConflictException("PHONE_NUMBER_ALREADY_EXISTS");
+
+        User user = userMapper.fromEmployeeAddDTO(dto);
+
+        Role role = roleRepository
+                .findById(dto.getRoleId())
+                .orElseThrow(() -> new NotFoundException("ROLE_NOT_FOUND"));
+
+        user.setActive(false);
+        user.setRole(role);
+        userRepository.save(user);
+        return ApiResult.successResponse();
     }
 
     private User authenticate(String phoneNumber, String password) {
@@ -113,20 +135,22 @@ public class AuthServiceImpl implements AuthService {
             return (User) authentication.getPrincipal();
         } catch (DisabledException | LockedException | CredentialsExpiredException disabledException) {
             throw new NotEnabledException("USER_IS_DISABLED");
-        } catch (BadCredentialsException | UsernameNotFoundException badCredentialsException) {
-            throw new NotFoundException("INVALID_USERNAME_OR_PASSWORD");
+        } catch (UsernameNotFoundException usernameNotFoundException) {
+            throw new NotFoundException("PHONE_NUMBER_NOT_FOUND");
+        } catch (BadCredentialsException badCredentialsException) {
+            throw new BadCredentialsException("INVALID_PHONE_NUMBER_OR_PASSWORD");
         }
     }
 
     @Override
-    public ApiResult<Void> register(ClientRegisterDTO dto) {
+    public ApiResult<Void> registerClient(ClientRegisterDTO dto) {
 
         log.info("User registration with " + dto);
 
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber()))
             throw new ConflictException("PHONE_NUMBER_ALREADY_EXISTS");
 
-        User user = userMapper.fromAddDTO(dto);
+        User user = userMapper.fromClientAddDTO(dto);
         Role role = roleRepository
                 .findByName(clientRoleName)
                 .orElseThrow(() -> new NotFoundException("DEFAULT_ROLE_NOT_FOUND"));
@@ -137,16 +161,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public ApiResult<String> getSMSCode(String phoneNumber) {
         User user = userRepository
                 .findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("USER NOT FOUND WITH PHONE NUMBER"));
         String smsCode = RandomStringUtils.random(4, false, true);
         user.setPassword(passwordEncoder.encode(smsCode));
-        // TODO: 2/14/2023 sms valid till do not static
         user.setCodeValidTill(LocalDateTime.now().plus(smsValidTill, ChronoUnit.valueOf(smsValidTillIn)));
+        // TODO: 2/15/2023 Sms service send sms to client
         userRepository.save(user);
-        System.out.println("smsCode = " + smsCode);
+        System.out.println("********************** smsCode = " + smsCode);
         return ApiResult.successResponse("SMS code sent");
     }
 

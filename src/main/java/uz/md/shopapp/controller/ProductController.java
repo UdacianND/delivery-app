@@ -1,4 +1,4 @@
-package uz.md.shopapp.resource;
+package uz.md.shopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,11 +20,11 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(ProductResource.BASE_URL + "/")
+@RequestMapping(ProductController.BASE_URL + "/")
 @RequiredArgsConstructor
 @Tag(name = "Product", description = "Endpoints for Product")
 @Slf4j
-public class ProductResource {
+public class ProductController {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "product";
     private final ProductService productService;
@@ -46,10 +46,9 @@ public class ProductResource {
     @PostMapping("/add")
     @Operation(description = "add product")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResult<ProductDTO> add(@RequestBody @Valid ProductAddDTO dto, @RequestParam MultipartFile image) {
+    public ApiResult<ProductDTO> add(@RequestBody @Valid ProductAddDTO dto) {
         log.info("Product Add");
         log.info("Request body {}", dto);
-        dto.setImage(image);
         return productService.add(dto);
     }
 

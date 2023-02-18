@@ -52,3 +52,10 @@ app:
   sms:
     valid_till: 15
     valid_till_in: MINUTES
+  images:
+    institutions:
+      root:
+        path: "testing/uploads/institutions/"
+    products:
+      root:
+        path: "testing/uploads/products/"

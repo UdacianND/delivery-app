@@ -1,7 +1,10 @@
 package uz.md.shopapp.service.impl;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import uz.md.shopapp.domain.Institution;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.institution.InstitutionAddDTO;
@@ -12,20 +15,36 @@ import uz.md.shopapp.exceptions.AlreadyExistsException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.InstitutionMapper;
 import uz.md.shopapp.repository.InstitutionRepository;
+import uz.md.shopapp.service.contract.FilesStorageService;
 import uz.md.shopapp.service.contract.InstitutionService;
+import uz.md.shopapp.utils.AppConstants;
 
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
 public class InstitutionServiceImpl implements InstitutionService {
 
+    @Value("${app.images.institutions.root.path}")
+    private String institutionsPath;
+
+    private Path institutionsImagesRoot ;
+
+    @PostConstruct
+    public void init() {
+        institutionsImagesRoot = Path.of(institutionsPath);
+    }
+
     private final InstitutionRepository institutionRepository;
     private final InstitutionMapper institutionMapper;
+    private final FilesStorageService filesStorageService;
 
     public InstitutionServiceImpl(InstitutionRepository institutionRepository,
-                                  InstitutionMapper institutionMapper) {
+                                  InstitutionMapper institutionMapper,
+                                  FilesStorageService filesStorageService) {
         this.institutionRepository = institutionRepository;
         this.institutionMapper = institutionMapper;
+        this.filesStorageService = filesStorageService;
     }
 
     @Override
@@ -34,11 +53,13 @@ public class InstitutionServiceImpl implements InstitutionService {
         if (institutionRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
             throw new AlreadyExistsException("INSTITUTION_NAME_ALREADY_EXISTS");
 
+        Institution institution = institutionMapper
+                .fromAddDTO(dto);
+
         return ApiResult
                 .successResponse(institutionMapper
                         .toDTO(institutionRepository
-                                .save(institutionMapper
-                                        .fromAddDTO(dto))));
+                                .save(institution)));
     }
 
     @Override
@@ -67,11 +88,9 @@ public class InstitutionServiceImpl implements InstitutionService {
 
     @Override
     public ApiResult<List<InstitutionDTO>> getAll() {
-        return ApiResult.successResponse(
-                institutionMapper.toDTOList(
-                        institutionRepository.findAll()
-                )
-        );
+        return ApiResult.successResponse(institutionMapper
+                .toDTOList(institutionRepository
+                        .findAll()));
     }
 
     @Override
@@ -99,6 +118,17 @@ public class InstitutionServiceImpl implements InstitutionService {
         return ApiResult.successResponse(institutionRepository
                 .findAllForInfo(PageRequest.of(paged[0], paged[1]))
                 .getContent());
+    }
+
+    @Override
+    public ApiResult<Void> setImage(Long institutionId, MultipartFile image) {
+        Institution institution = institutionRepository
+                .findById(institutionId)
+                .orElseThrow(() -> new NotFoundException("INSTITUTION NOT FOUND"));
+        filesStorageService.save(image, institutionsImagesRoot);
+        institution.setImageUrl(institutionsImagesRoot.toUri() + image.getOriginalFilename());
+        institutionRepository.save(institution);
+        return ApiResult.successResponse();
     }
 
     @Override

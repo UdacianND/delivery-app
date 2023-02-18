@@ -35,6 +35,13 @@ public class InstitutionType extends AbsLongEntity {
     @ToString.Exclude
     private List<Institution> institutions;
 
+    public InstitutionType(String nameUz, String nameRu, String descriptionUz, String descriptionRu) {
+        this.nameUz = nameUz;
+        this.nameRu = nameRu;
+        this.descriptionUz = descriptionUz;
+        this.descriptionRu = descriptionRu;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

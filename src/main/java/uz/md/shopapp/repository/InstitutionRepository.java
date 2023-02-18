@@ -15,15 +15,15 @@ public interface InstitutionRepository extends JpaRepository<Institution, Long> 
 
     boolean existsByNameUzOrNameRuAndIdIsNot(String nameUz, String nameRu, Long id);
 
-    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu, i.descriptionUz,i.descriptionRu) from Institution i where i.deleted = false ")
+    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu, i.imageUrl, i.descriptionUz,i.descriptionRu, i.type.id, i.manager.id) from Institution i where i.deleted = false ")
     List<InstitutionInfoDTO> findAllForInfo();
 
-    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu, i.descriptionUz,i.descriptionRu) from Institution i where i.deleted = false and i.type.id = :typeId")
+    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu, i.imageUrl, i.descriptionUz,i.descriptionRu, i.type.id, i.manager.id) from Institution i where i.deleted = false and i.type.id = :typeId")
     List<InstitutionInfoDTO> findAllForInfoByTypeId(Long typeId);
 
-    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu, i.descriptionUz,i.descriptionRu) from Institution i where i.deleted = false and i.manager.id = :managerId")
+    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu, i.imageUrl, i.descriptionUz,i.descriptionRu, i.type.id, i.manager.id) from Institution i where i.deleted = false and i.manager.id = :managerId")
     List<InstitutionInfoDTO> findAllForInfoByManagerId(Long managerId);
 
-    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu, i.descriptionUz,i.descriptionRu) from Institution i where i.deleted = false and i.manager.id = :managerId")
+    @Query("select new uz.md.shopapp.dtos.institution.InstitutionInfoDTO(i.id, i.nameUz,i.nameRu,i.imageUrl, i.descriptionUz,i.descriptionRu, i.type.id, i.manager.id) from Institution i where i.deleted = false")
     Page<InstitutionInfoDTO> findAllForInfo(Pageable pageable);
 }

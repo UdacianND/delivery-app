@@ -1,4 +1,4 @@
-package uz.md.shopapp.resource;
+package uz.md.shopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,11 +18,11 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(InstitutionTypeResource.BASE_URL + "/")
+@RequestMapping(InstitutionTypeController.BASE_URL + "/")
 @RequiredArgsConstructor
 @Tag(name = "InstitutionType", description = "Endpoints for InstitutionType")
 @Slf4j
-public class InstitutionTypeResource {
+public class InstitutionTypeController {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "institutionType";
 

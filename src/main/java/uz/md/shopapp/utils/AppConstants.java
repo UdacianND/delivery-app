@@ -1,7 +1,10 @@
 package uz.md.shopapp.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uz.md.shopapp.resource.AuthResource;
+import uz.md.shopapp.controller.AuthController;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public interface AppConstants {
 
@@ -14,7 +17,7 @@ public interface AppConstants {
     String AUTHENTICATION_HEADER = "Authentication";
 
     String[] OPEN_PAGES = {
-            AuthResource.BASE_URL + "/**"
+            AuthController.BASE_URL + "/**"
     };
 
     String[] SWAGGER_PAGES = {
@@ -48,5 +51,4 @@ public interface AppConstants {
     String PhoneNumber_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
     String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
 
-    String BASE_URL_FOR_ADMIN = BASE_URL + "admin/";
 }

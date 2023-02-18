@@ -1,4 +1,4 @@
-package uz.md.shopapp.resource;
+package uz.md.shopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,11 +15,11 @@ import uz.md.shopapp.service.contract.UserService;
 import uz.md.shopapp.utils.AppConstants;
 
 @RestController
-@RequestMapping(UserResource.BASE_URL + "/")
+@RequestMapping(UserController.BASE_URL + "/")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "Endpoints for User")
 @Slf4j
-public class UserResource {
+public class UserController {
 
     public static final String BASE_URL = AppConstants.BASE_URL + "user";
 

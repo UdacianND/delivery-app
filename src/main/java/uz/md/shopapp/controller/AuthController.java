@@ -1,4 +1,4 @@
-package uz.md.shopapp.resource;
+package uz.md.shopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.TokenDTO;
+import uz.md.shopapp.dtos.user.EmployeeRegisterDTO;
 import uz.md.shopapp.dtos.user.ClientLoginDTO;
 import uz.md.shopapp.dtos.user.ClientRegisterDTO;
 import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
@@ -16,25 +17,31 @@ import uz.md.shopapp.service.contract.AuthService;
 import uz.md.shopapp.utils.AppConstants;
 
 @RestController
-@RequestMapping(AuthResource.BASE_URL)
+@RequestMapping(AuthController.BASE_URL)
 @RequiredArgsConstructor
 @Tag(name = "Auth", description = "Endpoints for Auth")
 @Slf4j
-public class AuthResource {
+public class AuthController {
 
     /**
      * AuthResource URL endpoints
      */
 
     public static final String BASE_URL = AppConstants.BASE_URL + "auth";
-    public static final String REGISTER_URL = "/sign-up";
     private final AuthService authService;
 
-    @PostMapping(value = REGISTER_URL)
+    @PostMapping(value = "/client/sign-up")
     @Operation(description = "register user")
-    ApiResult<Void> register(@RequestBody @Valid @NotNull ClientRegisterDTO dto) {
+    ApiResult<Void> registerClient(@RequestBody @Valid @NotNull ClientRegisterDTO dto) {
         log.info("Request body: {}", dto);
-        return authService.register(dto);
+        return authService.registerClient(dto);
+    }
+
+    @PostMapping(value = "/employee/sign-up")
+    @Operation(description = "register user")
+    ApiResult<Void> registerEmployee(@RequestBody @Valid @NotNull EmployeeRegisterDTO dto) {
+        log.info("Request body: {}", dto);
+        return authService.registerEmployee(dto);
     }
 
     @Operation(description = " get sms code")

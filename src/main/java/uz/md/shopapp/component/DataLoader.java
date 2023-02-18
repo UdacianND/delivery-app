@@ -13,6 +13,7 @@ import uz.md.shopapp.domain.User;
 import uz.md.shopapp.domain.enums.PermissionEnum;
 import uz.md.shopapp.repository.RoleRepository;
 import uz.md.shopapp.repository.UserRepository;
+import uz.md.shopapp.service.contract.FilesStorageService;
 
 import java.util.Objects;
 import java.util.Set;
@@ -27,13 +28,13 @@ import static uz.md.shopapp.domain.enums.PermissionEnum.*;
         havingValue = "true",
         matchIfMissing = true
 )
-@Profile("!test")
 @Slf4j
 public class DataLoader implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FilesStorageService filesStorageService;
 
     @Value("${app.admin.firstName}")
     private String firstName;
@@ -73,6 +74,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        filesStorageService.init();
         System.out.println("activeProfile = " + activeProfile);
         if (Objects.equals("create", modeType)) {
             addAdmin();

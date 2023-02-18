@@ -1,8 +1,11 @@
 package uz.md.shopapp.service.impl;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import uz.md.shopapp.domain.Category;
 import uz.md.shopapp.domain.Product;
 import uz.md.shopapp.domain.User;
@@ -19,19 +22,32 @@ import uz.md.shopapp.mapper.ProductMapper;
 import uz.md.shopapp.repository.CategoryRepository;
 import uz.md.shopapp.repository.ProductRepository;
 import uz.md.shopapp.service.QueryService;
+import uz.md.shopapp.service.contract.FilesStorageService;
 import uz.md.shopapp.service.contract.ProductService;
 import uz.md.shopapp.utils.CommonUtils;
 
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
+    @Value("${app.images.products.root.path}")
+    private String productsPath;
+
+    private Path productsImagesRoot;
+
+    @PostConstruct
+    public void init() {
+        productsImagesRoot = Path.of(productsPath);
+    }
+
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
     private final QueryService queryService;
+    private final FilesStorageService filesStorageService;
 
     private Product getById(Long id) {
         return productRepository
@@ -153,5 +169,16 @@ public class ProductServiceImpl implements ProductService {
         return ApiResult
                 .successResponse(productMapper
                         .toDTOList(productTypedQuery.getResultList()));
+    }
+
+    @Override
+    public ApiResult<Void> setImage(Long productId, MultipartFile image) {
+        Product product = productRepository
+                .findById(productId)
+                .orElseThrow(() -> new NotFoundException("PRODUCT NOT FOUND"));
+        filesStorageService.save(image, productsImagesRoot);
+        product.setImageUrl(productsImagesRoot.toUri() + image.getOriginalFilename());
+        productRepository.save(product);
+        return ApiResult.successResponse();
     }
 }

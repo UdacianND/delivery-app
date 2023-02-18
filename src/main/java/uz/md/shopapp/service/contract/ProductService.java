@@ -1,5 +1,6 @@
 package uz.md.shopapp.service.contract;
 
+import org.springframework.web.multipart.MultipartFile;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.product.ProductAddDTO;
 import uz.md.shopapp.dtos.product.ProductDTO;
@@ -24,4 +25,6 @@ public interface ProductService {
     ApiResult<List<ProductDTO>> findAllBySimpleSearch(SimpleSearchRequest request);
 
     ApiResult<List<ProductDTO>> findAllBySort(SimpleSortRequest request);
+
+    ApiResult<Void> setImage(Long productId, MultipartFile image);
 }

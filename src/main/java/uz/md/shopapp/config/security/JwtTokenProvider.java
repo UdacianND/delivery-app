@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uz.md.shopapp.domain.User;
@@ -14,7 +15,6 @@ import java.security.Key;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -33,13 +33,12 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh.expiration-time}")
     private Long JWT_EXPIRED_TIME_FOR_REFRESH_TOKEN;
 
-    public String generateAccessToken(User user, Timestamp issuedAt) {
+    public String generateAccessToken(@NotNull User user, Timestamp issuedAt) {
         Timestamp expireDate = new Timestamp(System.currentTimeMillis() + JWT_EXPIRED_TIME_FOR_ACCESS_TOKEN);
-        String userId = String.valueOf(user.getId());
-        String generateUuid = hideUserId(userId);
+        String phoneNumber = user.getPhoneNumber();
         return Jwts.builder()
                 .setClaims(new HashMap<>())
-                .setSubject(generateUuid)
+                .setSubject(phoneNumber)
                 .setIssuedAt(issuedAt)
                 .setExpiration(expireDate)
                 .signWith(getSignInKey(JWT_SECRET_KEY_FOR_ACCESS_TOKEN), SignatureAlgorithm.HS256)
@@ -57,7 +56,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(new HashMap<>())
-                .setSubject(user.getId().toString())
+                .setSubject(user.getPhoneNumber())
                 .setIssuedAt(issuedAt)
                 .setExpiration(expireDate)
                 .signWith(getSignInKey(JWT_SECRET_KEY_FOR_REFRESH_TOKEN), SignatureAlgorithm.HS256)
@@ -83,9 +82,8 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token);
     }
 
-    public String extractUserId(String token, boolean isAccessToken) {
-        String s = extractClaim(token, Claims::getSubject, isAccessToken);
-        return showUserId(s);
+    public String extractUserPhoneNumber(String token, boolean isAccessToken) {
+        return extractClaim(token, Claims::getSubject, isAccessToken);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver, boolean isAccessToken) {
@@ -102,19 +100,5 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-
-    private String hideUserId(String userId) {
-        String generatingUUID = String.valueOf(UUID.randomUUID());
-        String substring = generatingUUID.substring(0, 18);
-        String concat = substring.concat("-");
-        String concat1 = concat.concat(userId);
-        String substring1 = generatingUUID.substring(18);
-        return concat1.concat(substring1);
-    }
-
-    private String showUserId(String concat) {
-        return concat.substring(19, 55);
     }
 }
