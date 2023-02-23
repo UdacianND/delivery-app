@@ -11,25 +11,19 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import uz.md.shopapp.domain.Address;
-import uz.md.shopapp.domain.Institution;
-import uz.md.shopapp.domain.InstitutionType;
-import uz.md.shopapp.domain.User;
+import uz.md.shopapp.domain.*;
 import uz.md.shopapp.dtos.ApiResult;
-import uz.md.shopapp.dtos.institution.InstitutionAddDTO;
-import uz.md.shopapp.dtos.institution.InstitutionDTO;
-import uz.md.shopapp.dtos.institution.InstitutionEditDTO;
-import uz.md.shopapp.dtos.institution.InstitutionInfoDTO;
+import uz.md.shopapp.dtos.institution.*;
 import uz.md.shopapp.exceptions.AlreadyExistsException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.repository.*;
 import uz.md.shopapp.service.contract.InstitutionService;
+import uz.md.shopapp.util.Mock;
 import uz.md.shopapp.util.TestUtil;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,18 +44,6 @@ public class InstitutionServiceTest {
         rootPath = Path.of(rootPathUrl);
     }
 
-    private static final String TYPE_NAME_UZ = "typeUz";
-    private static final String TYPE_NAME_RU = "typeRu";
-
-    private static final String TYPE_DESCRIPTION_UZ = "descriptionUz";
-    private static final String TYPE_DESCRIPTION_RU = "descriptionRu";
-
-    private static final String NAME_UZ = "institutionUz";
-    private static final String NAME_RU = "institutionRu";
-
-    private static final String DESCRIPTION_UZ = "descriptionUz";
-    private static final String DESCRIPTION_RU = "descriptionRu";
-
     private static final String ADDING_NAME_UZ = "addingTypeUz";
     private static final String ADDING_NAME_RU = "addingTypeRu";
 
@@ -71,7 +53,7 @@ public class InstitutionServiceTest {
     private Institution institution;
     private InstitutionType institutionType;
     private User manager;
-    private Address address;
+    private Location location;
 
     @Autowired
     private InstitutionService institutionService;
@@ -84,7 +66,7 @@ public class InstitutionServiceTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private AddressRepository addressRepository;
+    private LocationRepository locationRepository;
 
     @AfterEach
     void destroy() {
@@ -95,47 +77,25 @@ public class InstitutionServiceTest {
     void setup() {
         setupType();
         setupManager();
-        setupAddress();
-        institution = new Institution(
-                NAME_UZ,
-                NAME_RU,
-                DESCRIPTION_UZ,
-                DESCRIPTION_RU,
-                null,
-                address,
-                institutionType,
-                null,
-                manager);
+        setupLocation();
+        institution = Mock.getInstitution(location, institutionType, manager);
     }
 
-    private void setupAddress() {
-        address = new Address(
-                manager,
-                15,
-                "street",
-                "city"
-        );
-        addressRepository.saveAndFlush(address);
+    private void setupLocation() {
+        location = Mock.getLocation();
+        locationRepository.saveAndFlush(location);
     }
 
     private void setupManager() {
-        manager = new User(
-                "Ali",
-                "Yusupov",
-                "+998902002020",
-                roleRepository
-                        .findByName("MANAGER")
-                        .orElseThrow(() -> new NotFoundException("ROLE NOT FOUND")));
+        Role role = roleRepository
+                .findByName("MANAGER")
+                .orElseThrow(() -> new NotFoundException("ROLE NOT FOUND", ""));
+        manager = Mock.getUser(role);
         userRepository.save(manager);
     }
 
     private void setupType() {
-        institutionType = new InstitutionType(
-                TYPE_NAME_UZ,
-                TYPE_NAME_RU,
-                TYPE_DESCRIPTION_UZ,
-                TYPE_DESCRIPTION_RU
-        );
+        institutionType = Mock.getInstitutionType();
         institutionTypeRepository.saveAndFlush(institutionType);
     }
 
@@ -147,7 +107,10 @@ public class InstitutionServiceTest {
                 ADDING_NAME_RU,
                 ADDING_DESCRIPTION_UZ,
                 ADDING_DESCRIPTION_RU,
-                institutionType.getId());
+                new LocationDto(15.0, 15.0),
+                institutionType.getId(),
+                manager.getId()
+        );
 
         ApiResult<InstitutionDTO> add = institutionService.add(addDTO);
 
@@ -167,7 +130,9 @@ public class InstitutionServiceTest {
                 ADDING_NAME_RU,
                 ADDING_DESCRIPTION_UZ,
                 ADDING_DESCRIPTION_RU,
-                institutionType.getId());
+                new LocationDto(15.0, 15.0),
+                institutionType.getId(),
+                manager.getId());
 
         assertThrows(AlreadyExistsException.class, () -> institutionService.add(addDTO));
     }
@@ -200,7 +165,9 @@ public class InstitutionServiceTest {
                 ADDING_DESCRIPTION_UZ,
                 ADDING_DESCRIPTION_RU,
                 institution.getId(),
-                institutionType.getId());
+                new LocationDto(15.0, 15.0),
+                institutionType.getId(),
+                manager.getId());
 
         ApiResult<InstitutionDTO> edit = institutionService.edit(editDTO);
 
@@ -221,7 +188,9 @@ public class InstitutionServiceTest {
                 ADDING_DESCRIPTION_UZ,
                 ADDING_DESCRIPTION_RU,
                 15L,
-                institutionType.getId());
+                new LocationDto(15.0, 15.0),
+                institutionType.getId(),
+                manager.getId());
 
         assertThrows(NotFoundException.class, () -> institutionService.edit(editDTO));
 
@@ -248,7 +217,9 @@ public class InstitutionServiceTest {
                 ADDING_DESCRIPTION_UZ,
                 ADDING_DESCRIPTION_RU,
                 institution.getId(),
-                institutionType.getId());
+                new LocationDto(15.0, 15.0),
+                institutionType.getId(),
+                manager.getId());
 
         assertThrows(AlreadyExistsException.class, () -> institutionService.edit(editDTO));
 
@@ -257,7 +228,7 @@ public class InstitutionServiceTest {
     @Test
     void shouldGetAll() {
 
-        List<Institution> institutions = TestUtil.generateMockInstitutions(3,institutionType, manager);
+        List<Institution> institutions = TestUtil.generateMockInstitutions(3, institutionType, manager);
         institutions = institutionRepository.saveAllAndFlush(institutions);
         ApiResult<List<InstitutionDTO>> all = institutionService.getAll();
 
@@ -295,6 +266,8 @@ public class InstitutionServiceTest {
                 "another",
                 "desc",
                 "desc",
+                locationRepository
+                        .saveAndFlush(new Location(15.0, 15.0)),
                 anotherType,
                 manager));
 
@@ -304,13 +277,13 @@ public class InstitutionServiceTest {
 
         List<InstitutionInfoDTO> data = all.getData();
         assertEquals(3, data.size());
-        TestUtil.checkInstitutionsEqualityEntityAndInfo(institutions.subList(0,3), data);
+        TestUtil.checkInstitutionsEqualityEntityAndInfo(institutions.subList(0, 3), data);
     }
 
     @Test
     void shouldGetAllByManagerId() {
 
-        List<Institution> institutions = TestUtil.generateMockInstitutions(4,institutionType, manager);
+        List<Institution> institutions = TestUtil.generateMockInstitutions(4, institutionType, manager);
         institutions = institutionRepository.saveAllAndFlush(institutions);
 
         User anotherManager = userRepository
@@ -319,11 +292,13 @@ public class InstitutionServiceTest {
                         "",
                         roleRepository
                                 .findByName("MANAGER")
-                                .orElseThrow(() -> new NotFoundException("DEFAULT ROLE NOT FOUND"))));
+                                .orElseThrow(() -> new NotFoundException("DEFAULT ROLE NOT FOUND",""))));
         institutions.add(new Institution("another",
                 "another",
                 "desc",
                 "desc",
+                locationRepository
+                        .saveAndFlush(new Location(15.0, 15.0)),
                 institutionType,
                 anotherManager));
 
@@ -333,13 +308,13 @@ public class InstitutionServiceTest {
 
         List<InstitutionInfoDTO> data = all.getData();
         assertEquals(4, data.size());
-        TestUtil.checkInstitutionsEqualityEntityAndInfo(institutions.subList(0,4), data);
+        TestUtil.checkInstitutionsEqualityEntityAndInfo(institutions.subList(0, 4), data);
     }
 
     @Test
     void shouldGetAllByPage() {
 
-        List<Institution> institutions = TestUtil.generateMockInstitutions(10,institutionType, manager);
+        List<Institution> institutions = TestUtil.generateMockInstitutions(10, institutionType, manager);
         institutions = institutionRepository.saveAllAndFlush(institutions);
         ApiResult<List<InstitutionInfoDTO>> all = institutionService
                 .getAllForInfoByPage("0-4");
@@ -354,7 +329,7 @@ public class InstitutionServiceTest {
     @Test
     void shouldGetAllByPage2() {
 
-        List<Institution> institutions = TestUtil.generateMockInstitutions(10,institutionType, manager);
+        List<Institution> institutions = TestUtil.generateMockInstitutions(10, institutionType, manager);
         institutions = institutionRepository.saveAllAndFlush(institutions);
         ApiResult<List<InstitutionInfoDTO>> all = institutionService
                 .getAllForInfoByPage("1-4");
@@ -394,8 +369,6 @@ public class InstitutionServiceTest {
         assertEquals(rootPath.toUri() + "family.jpeg",
                 res.getImageUrl());
     }
-
-
 
 
 }

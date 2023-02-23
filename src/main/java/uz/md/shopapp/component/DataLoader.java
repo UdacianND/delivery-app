@@ -2,20 +2,21 @@ package uz.md.shopapp.component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import uz.md.shopapp.domain.Role;
-import uz.md.shopapp.domain.User;
+import uz.md.shopapp.domain.*;
 import uz.md.shopapp.domain.enums.PermissionEnum;
-import uz.md.shopapp.repository.RoleRepository;
-import uz.md.shopapp.repository.UserRepository;
+import uz.md.shopapp.repository.*;
 import uz.md.shopapp.service.contract.FilesStorageService;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 
 import static uz.md.shopapp.domain.enums.PermissionEnum.*;
@@ -29,8 +30,14 @@ import static uz.md.shopapp.domain.enums.PermissionEnum.*;
         matchIfMissing = true
 )
 @Slf4j
+@Profile(value = {"test", "dev"})
 public class DataLoader implements CommandLineRunner {
 
+    private final LocationRepository locationRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final InstitutionRepository institutionRepository;
+    private final InstitutionTypeRepository institutionTypeRepository;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -80,7 +87,89 @@ public class DataLoader implements CommandLineRunner {
             addAdmin();
             saveManagerRole();
             saveClientRole();
+            initLocations();
+            initInstitutionTypes();
+            initInstitutions();
+            initCategories();
+            initProducts();
         }
+    }
+
+    private void initLocations() {
+        locationRepository.saveAndFlush(new Location(15.0, 15.0));
+        locationRepository.saveAndFlush(new Location(19.0, 19.0));
+        locationRepository.saveAndFlush(new Location(29.0, 29.0));
+        locationRepository.saveAndFlush(new Location(87.0, 87.0));
+    }
+
+    private void initProducts() {
+        Random random;
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 3; j++) {
+                random = new Random();
+                productRepository.save(new Product(
+                        "nameUz" + i + "-" + j,
+                        "NameRu" + i + "-" + j,
+                        "",
+                        "description",
+                        "description",
+                        Math.round(random.nextDouble() * 500) + 100.0,
+                        categoryRepository.findById(i + 1L).orElseThrow()
+                ));
+            }
+        }
+    }
+
+    private void initCategories() {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 3; j++) {
+                categoryRepository.save(new Category(
+                        "nameUz" + i + "-" + j,
+                        "NameRu" + i + "-" + j,
+                        "description",
+                        "description",
+                        null,
+                        institutionRepository.findById(i + 1L).orElseThrow()));
+            }
+        }
+    }
+
+    private void initInstitutions() {
+        List<Location> locations = locationRepository.findAll();
+        institutionRepository.saveAll(List.of(
+                new Institution("Max Way", "Max Way", "", "",
+                        locations.get(0),
+                        institutionTypeRepository.findById(1L).orElseThrow(),
+                        userRepository.findById(1L).orElseThrow()
+                ),
+
+                new Institution("Korzinka", "Korzinka", "", "",
+                        locations.get(1),
+                        institutionTypeRepository.findById(3L).orElseThrow(),
+                        userRepository.findById(1L).orElseThrow()
+                ),
+
+                new Institution("Shopping", "Shopping", "", "",
+                        locations.get(2),
+                        institutionTypeRepository.findById(4L).orElseThrow(),
+                        userRepository.findById(1L).orElseThrow()
+                ),
+
+                new Institution("Moida By Azan", "Moida By Azan", "", "",
+                        locations.get(3),
+                        institutionTypeRepository.findById(2L).orElseThrow(),
+                        userRepository.findById(1L).orElseThrow()
+                )
+        ));
+    }
+
+    private void initInstitutionTypes() {
+        institutionTypeRepository.saveAll(List.of(
+                new InstitutionType("Restaurant", "Restaurant", "All restaurants", ""),
+                new InstitutionType("Cafe", "Cafe", "All restaurants", ""),
+                new InstitutionType("Market", "Market", "All restaurants", ""),
+                new InstitutionType("MiniMarket", "MiniMarket", "All restaurants", "")
+        ));
     }
 
     private void saveManagerRole() {
@@ -110,7 +199,6 @@ public class DataLoader implements CommandLineRunner {
         );
     }
 
-
     private void addAdmin() {
         userRepository.save(new User(
                 firstName,
@@ -121,7 +209,7 @@ public class DataLoader implements CommandLineRunner {
         ));
     }
 
-    private Role addAdminRole() {
+    private @NotNull Role addAdminRole() {
         return roleRepository.save(
                 new Role(adminRoleName,
                         adminRoleDescription,
@@ -129,6 +217,5 @@ public class DataLoader implements CommandLineRunner {
                 )
         );
     }
-
 
 }

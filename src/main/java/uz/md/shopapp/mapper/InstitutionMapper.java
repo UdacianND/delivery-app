@@ -10,6 +10,7 @@ import uz.md.shopapp.dtos.institution.InstitutionEditDTO;
 @Mapper(componentModel = "spring")
 public interface InstitutionMapper extends EntityMapper<Institution, InstitutionDTO> {
 
+
     Institution fromAddDTO(InstitutionAddDTO dto);
 
     Institution fromEditDTO(InstitutionEditDTO editDTO, @MappingTarget Institution editing);

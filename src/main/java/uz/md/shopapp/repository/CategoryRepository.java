@@ -18,16 +18,15 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     boolean existsByNameUzOrNameRuAndIdIsNot(String nameUz, String nameRu, Long id);
 
-    @Query("select new uz.md.shopapp.dtos.category.CategoryInfoDTO(c.id, c.nameUz, c.nameRu, c.descriptionUz, c.descriptionRu) from Category c where c.deleted=false")
-    List<Category> findAllForInfo();
+    @Query("select new uz.md.shopapp.dtos.category.CategoryInfoDTO(id, nameUz, nameRu, descriptionUz, descriptionRu, institution.id) from Category where deleted=false")
+    List<CategoryInfoDTO> findAllForInfo();
 
-    @Query("select new uz.md.shopapp.dtos.category.CategoryInfoDTO(c.id, c.nameUz, c.nameRu, c.descriptionUz, c.descriptionRu) from Category c where c.deleted=false and c.institution.id = :id")
+    @Query("select new uz.md.shopapp.dtos.category.CategoryInfoDTO(c.id, c.nameUz, c.nameRu, c.descriptionUz, c.descriptionRu, i.id) from Category c join c.institution i  where c.deleted = false and i.id = :id")
     List<CategoryInfoDTO> findAllForInfoByInstitutionId(Long id);
 
-
-    Optional<Category> findByNameUzAndNameRu(String nameUz, String nameRu);
-
-    Page<CategoryInfoDTO> findAllForInfoByInstitutionId(Long id, Pageable pageable);
+    @Query(countQuery = "SELECT COUNT(c) FROM Category c WHERE c.institution.id= :id and c.deleted = false ",
+            value = "FROM Category WHERE deleted = false and institution.id= :id")
+    Page<Category> findAllForInfoByInstitutionId(Long id, Pageable pageable);
 
     @Query("select c.institution.manager.id from Category c where c.id = :id")
     Long findMangerIdByCategoryId(Long id);

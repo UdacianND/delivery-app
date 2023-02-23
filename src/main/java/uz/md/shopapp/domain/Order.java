@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "orders")
 @Builder
@@ -32,16 +31,18 @@ public class Order extends AbsLongEntity {
     private OrderStatus status = OrderStatus.PREPARING;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(nullable = false)
     private Address address;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
-    @ToString.Include
     private List<OrderProduct> orderProducts;
 
+    @Column(nullable = false)
     private LocalDateTime deliveryTime;
 
+    @Column(nullable = false)
     private Double deliveryPrice;
-
+    @Column(nullable = false)
     private Double overallPrice;
 
 

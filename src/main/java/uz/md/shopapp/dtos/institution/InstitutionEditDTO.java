@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 @Getter
@@ -23,8 +22,10 @@ public class InstitutionEditDTO extends InstitutionAddDTO {
                               String descriptionUz,
                               String descriptionRu,
                               Long id,
-                              Long institutionTypeId) {
-        super(nameUz, nameRu, descriptionUz, descriptionRu, institutionTypeId);
+                              LocationDto location,
+                              Long institutionTypeId,
+                              Long managerId) {
+        super(nameUz, nameRu, descriptionUz, descriptionRu, location, institutionTypeId, managerId);
         this.id = id;
     }
 

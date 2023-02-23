@@ -49,7 +49,10 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository
                 .findById(id)
                 .orElseThrow(() -> {
-                    throw new NotFoundException("ORDER_NOT_FOUND_WITH_ID" + id);
+                    throw NotFoundException.builder()
+                            .messageUz("ORDER_NOT_FOUND_WITH_ID" + id)
+                            .messageRu("")
+                            .build();
                 });
     }
 
@@ -65,22 +68,31 @@ public class OrderServiceImpl implements OrderService {
     public ApiResult<OrderDTO> add(OrderAddDTO dto) {
 
         Order order = new Order();
-        UUID userId = dto.getUserId();
+        Long userId = dto.getUserId();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("USER_NOT_FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("USER_NOT_FOUND")
+                        .messageRu("")
+                        .build());
 
         Address address;
         if (dto.getAddressId() != null) {
             address = addressRepository
                     .findByIdAndUserId(dto.getAddressId(), user.getId())
-                    .orElseThrow(() -> new NotFoundException("ADDRESS_NOT_FOUND"));
+                    .orElseThrow(() -> NotFoundException.builder()
+                            .messageUz("ADDRESS_NOT_FOUND")
+                            .messageRu("")
+                            .build());
         } else if (dto.getAddress() != null) {
             Address adding = addressMapper.fromAddDTO(dto.getAddress());
             adding.setUser(user);
             address = addressRepository.save(adding);
         } else {
-            throw new IllegalRequestException("ADDRESS_MUST_BE_GIVEN_FOR_ORDER");
+            throw IllegalRequestException.builder()
+                    .messageUz("ADDRESS_MUST_BE_GIVEN_FOR_ORDER")
+                    .messageRu("")
+                    .build();
         }
 
         order.setUser(user);
@@ -94,7 +106,10 @@ public class OrderServiceImpl implements OrderService {
             orderProduct.setOrder(order);
             Product product = productRepository
                     .findById(addDTO.getProductId())
-                    .orElseThrow(() -> new NotFoundException("ORDER_PRODUCT_NOT_FOUND"));
+                    .orElseThrow(() -> NotFoundException.builder()
+                            .messageUz("ORDER_PRODUCT_NOT_FOUND")
+                            .messageRu("")
+                            .build());
             orderProduct.setProduct(product);
             orderProduct.setPrice(product.getPrice() * addDTO.getQuantity());
             orderProductRepository.save(orderProduct);
@@ -120,7 +135,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ApiResult<Void> delete(Long id) {
         if (!orderRepository.existsById(id))
-            throw new NotFoundException("ORDER_DOES_NOT_EXIST");
+            throw NotFoundException.builder()
+                    .messageUz("ORDER_DOES_NOT_EXIST")
+                    .messageRu("")
+                    .build();
         orderRepository.deleteById(id);
         return ApiResult.successResponse();
     }
@@ -156,11 +174,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<List<OrderDTO>> getOrdersByUserId(UUID userid, String pagination) {
+        String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
+        User user = userRepository
+                .findByPhoneNumber(currentUserPhoneNumber)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("User not found")
+                        .messageRu("")
+                        .build());
         int[] page = CommonUtils.getPagination(pagination);
         return ApiResult
                 .successResponse(orderMapper
                         .toDTOList(orderRepository
-                                .findAllByUserId(userid,
-                                        PageRequest.of(page[0], page[1])).getContent()));
+                                .findAllByUser_IdAndDeletedIsFalse(user.getId(),
+                                        PageRequest.of(page[0], page[1]))
+                                .getContent()));
     }
 }

@@ -17,7 +17,7 @@ import java.util.UUID;
 public class OrderAddDTO {
 
     @NotNull(message = "order user id must not be null")
-    private UUID userId;
+    private Long userId;
     private AddressAddDTO address;
     private Long addressId;
     private LocalDateTime deliveryTime;

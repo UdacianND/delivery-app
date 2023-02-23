@@ -2,8 +2,6 @@ package uz.md.shopapp.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import uz.md.shopapp.domain.enums.PermissionEnum;
@@ -22,8 +20,9 @@ import java.util.Set;
 @SQLDelete(sql = "update role SET deleted = true where id = ?")
 public class Role extends AbsLongEntity {
 
-    private  String name;
-    private  String description;
+    @Column(nullable = false, unique = true)
+    private String name;
+    private String description;
 
     @CollectionTable(name = "role_permission",
             joinColumns =

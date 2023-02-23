@@ -20,6 +20,11 @@ public class InstitutionAddDTO {
     private String descriptionUz;
     private String descriptionRu;
 
+    @NotNull(message = "Institution location must not be null")
+    private LocationDto location;
+
     @NotNull(message = "Institution type id must not be null")
     private Long institutionTypeId;
+    @NotNull(message = "Institution manager id must not be null")
+    private Long managerId;
 }

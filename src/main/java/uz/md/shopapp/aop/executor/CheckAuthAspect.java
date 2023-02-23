@@ -49,11 +49,17 @@ public class CheckAuthAspect {
 
             PermissionEnum[] permission = checkAuth.permission();
             if (permission.length > 0 && notPermission(userFromBearerToken.getRole().getPermissions(), permission)) {
-                throw new NotAllowedException("FORBIDDEN");
+                throw NotAllowedException.builder()
+                        .messageUz("FORBIDDEN")
+                        .messageRu("")
+                        .build();
             }
             httpServletRequest.setAttribute(AppConstants.REQUEST_ATTRIBUTE_CURRENT_USER, userFromBearerToken);
         } else
-            throw new NotAllowedException("FORBIDDEN");
+            throw NotAllowedException.builder()
+                    .messageUz("FORBIDDEN")
+                    .messageRu("")
+                    .build();
     }
 
 
@@ -61,7 +67,10 @@ public class CheckAuthAspect {
         try {
             String token = httpServletRequest.getHeader(AppConstants.AUTHORIZATION_HEADER);
             if (Objects.isNull(token) || token.isEmpty()) {
-                throw new NotAllowedException("FORBIDDEN");
+                throw NotAllowedException.builder()
+                        .messageUz("FORBIDDEN")
+                        .messageRu("")
+                        .build();
             }
             return token;
         } catch (Exception e) {

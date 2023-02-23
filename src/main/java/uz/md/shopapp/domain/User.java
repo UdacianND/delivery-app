@@ -40,7 +40,7 @@ public class User extends AbsLongEntity implements UserDetails {
     // we check if user is client we don't check if user is not client
     private LocalDateTime codeValidTill;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.EAGER)
     @ToString.Include
     private List<Address> addresses;
 

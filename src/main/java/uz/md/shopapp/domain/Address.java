@@ -23,7 +23,8 @@ public class Address {
     private String street;
     private String city;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(nullable = false)
     private Location location;
 
     public Address(User user, Integer houseNumber, String street, String city) {

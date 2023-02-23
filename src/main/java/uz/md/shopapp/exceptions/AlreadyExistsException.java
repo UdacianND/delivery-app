@@ -1,7 +1,15 @@
 package uz.md.shopapp.exceptions;
 
+import lombok.Builder;
+
+@Builder
 public class AlreadyExistsException extends RuntimeException {
-    public AlreadyExistsException(String message) {
-        super(message);
+    private String messageUz;
+    private String messageRu;
+
+    public AlreadyExistsException(String messageUz, String messageRu) {
+        super(messageUz);
+        this.messageUz = messageUz;
+        this.messageRu = messageRu;
     }
 }

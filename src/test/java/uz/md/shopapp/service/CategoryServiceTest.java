@@ -4,7 +4,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +19,7 @@ import uz.md.shopapp.exceptions.AlreadyExistsException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.repository.*;
 import uz.md.shopapp.service.contract.CategoryService;
+import uz.md.shopapp.util.Mock;
 import uz.md.shopapp.util.TestUtil;
 
 import java.util.ArrayList;
@@ -33,33 +33,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class CategoryServiceTest {
 
-    private static final String INSTITUTION_NAME_UZ = "Max Way";
-    private static final String INSTITUTION_NAME_RU = "max Way";
-
-    private static final String INSTITUTION_DESCRIPTION_UZ = " Number one cafe ";
-    private static final String INSTITUTION_DESCRIPTION_RU = " Number one cafe ";
-
-    private static final String NAME_UZ = "Lavash";
-    private static final String NAME_RU = "Lavash ru";
-
-    private static final String DESCRIPTION_UZ = " number one lavash ";
-    private static final String DESCRIPTION_RU = " number one lavash ";
-
     @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
     private CategoryService categoryService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     private Category category;
 
     private Institution institution;
     private InstitutionType institutionType;
     private User manager;
-
+    private Location location;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -70,20 +55,16 @@ public class CategoryServiceTest {
     private UserRepository userRepository;
     @Autowired
     private InstitutionTypeRepository institutionTypeRepository;
+    @Autowired
+    private LocationRepository locationRepository;
 
     @BeforeEach
     public void init() {
         setupType();
+        setupLocation();
         setupManager();
         setupInstitution();
-        category = new Category();
-        category.setNameUz(NAME_UZ);
-        category.setNameRu(NAME_RU);
-        category.setDescriptionUz(DESCRIPTION_UZ);
-        category.setDescriptionRu(DESCRIPTION_RU);
-        category.setDeleted(false);
-        category.setActive(true);
-        category.setInstitution(institution);
+        category = Mock.getCategory(institution);
         categoryRepository.deleteAll();
     }
 
@@ -93,40 +74,34 @@ public class CategoryServiceTest {
     }
 
     private void setupManager() {
-        manager = new User();
-        manager.setFirstName("Ali");
-        manager.setLastName("Ali");
-        manager.setPassword(passwordEncoder.encode("123"));
-        manager.setPhoneNumber("+998941001010");
-        manager.setRole(roleRepository
-                .findByName("MANAGER")
-                .orElseThrow());
+        Role role = roleRepository.findByName("MANAGER")
+                .orElseThrow(() -> new NotFoundException("ROLE NOT FOUND", ""));
+        manager = new User(
+                "Ali",
+                "Yusupov",
+                "+998941001010",
+                role);
         userRepository.saveAndFlush(manager);
     }
 
     private void setupType() {
-        institutionType = new InstitutionType();
-        institutionType.setNameUz("Cafe");
-        institutionType.setNameRu("Cafe");
-        institutionType.setDescriptionUz("all Cafes");
-        institutionType.setDescriptionRu("all cafes");
+        institutionType = Mock.getInstitutionType();
         institutionTypeRepository.saveAndFlush(institutionType);
     }
 
+    private void setupLocation() {
+        location = Mock.getLocation();
+        locationRepository.saveAndFlush(location);
+    }
+
     private void setupInstitution() {
-        institution = new Institution();
-        institution.setNameUz(INSTITUTION_NAME_UZ);
-        institution.setNameRu(INSTITUTION_NAME_RU);
-        institution.setDescriptionUz(INSTITUTION_DESCRIPTION_UZ);
-        institution.setDescriptionRu(INSTITUTION_DESCRIPTION_RU);
-        institution.setType(institutionType);
-        institution.setManager(manager);
+        institution = Mock.getInstitution(location, institutionType, manager);
         institutionRepository.saveAndFlush(institution);
     }
 
     @Test
     @Transactional
-    @WithMockUser(username = "ADMIN", authorities = {"GET_CATEGORY", "ADD_CATEGORY"})
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldAddCategory() {
 
         CategoryAddDTO addDTO = new CategoryAddDTO("category",
@@ -150,6 +125,7 @@ public class CategoryServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldNotAddWithoutInstitution() {
         CategoryAddDTO addDTO = new CategoryAddDTO("category",
                 "category",
@@ -162,6 +138,7 @@ public class CategoryServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldNotAddWithAlreadyExistedName() {
         categoryRepository.save(category);
         CategoryAddDTO addDTO = new CategoryAddDTO(category.getNameUz(), category.getNameRu(), "d", "d", institution.getId());
@@ -200,6 +177,7 @@ public class CategoryServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldEditCategory() {
 
         categoryRepository.save(category);
@@ -228,6 +206,7 @@ public class CategoryServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldNotEditCategoryWithoutInstitution() {
         categoryRepository.save(category);
         CategoryEditDTO editDTO = new CategoryEditDTO("new name uz",
@@ -242,6 +221,7 @@ public class CategoryServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldNotEditToAlreadyExistedName() {
 
         Category another = new Category("",
@@ -265,6 +245,7 @@ public class CategoryServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldNotFindWithNotExistedId() {
         CategoryEditDTO editDTO = new CategoryEditDTO("name",
                 "",
@@ -277,6 +258,7 @@ public class CategoryServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldNotChangeProductsWhenCategoryEdited() {
         productRepository.deleteAll();
         categoryRepository.save(category);
@@ -334,6 +316,7 @@ public class CategoryServiceTest {
                         "another",
                         "",
                         "",
+                        new Location(12.0, 12.0),
                         institutionType,
                         manager));
 
@@ -359,15 +342,14 @@ public class CategoryServiceTest {
     @Transactional
     void shouldGetAllByInstitutionIdAndPage() {
 
-        categoryRepository.saveAllAndFlush(TestUtil
-                .generateMockCategories(10, institution));
-
         Institution another = institutionRepository
                 .saveAndFlush(new Institution(
                         "another",
                         "another",
                         "",
                         "",
+                        locationRepository
+                                .saveAndFlush(new Location(15.0, 18.0)),
                         institutionType,
                         manager));
 
@@ -375,13 +357,16 @@ public class CategoryServiceTest {
                 .saveAllAndFlush(TestUtil
                         .generateMockCategories(5, another));
 
+        categoryRepository.saveAllAndFlush(TestUtil
+                .generateMockCategories(10, institution));
+
         ApiResult<List<CategoryInfoDTO>> result = categoryService
                 .getAllByInstitutionIdAndPage(institution.getId(), "0-4");
 
         assertTrue(result.isSuccess());
         List<CategoryInfoDTO> data = result.getData();
         List<Category> all = categoryRepository.findAll();
-        TestUtil.checkCategoriesInfoEquality(data, all.subList(0, 4));
+        TestUtil.checkCategoriesInfoEquality(data, all.subList(5, 9));
     }
 
     @Test
@@ -397,6 +382,8 @@ public class CategoryServiceTest {
                         "another",
                         "",
                         "",
+                        locationRepository
+                                .saveAndFlush(new Location(15.0, 18.0)),
                         institutionType,
                         manager));
 
@@ -414,8 +401,10 @@ public class CategoryServiceTest {
     }
 
     @Test
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldDeleteById() {
         categoryRepository.saveAllAndFlush(TestUtil.generateMockCategories(10, institution));
+        categoryRepository.saveAndFlush(category);
         ApiResult<Void> delete = categoryService.delete(category.getId());
         assertTrue(delete.isSuccess());
         Optional<Category> byId = categoryRepository.findById(category.getId());
@@ -423,12 +412,14 @@ public class CategoryServiceTest {
     }
 
     @Test
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldNotDeleteByIdNotExisted() {
         categoryRepository.saveAllAndFlush(TestUtil.generateMockCategories(3, institution));
         assertThrows(NotFoundException.class, () -> categoryService.delete(150L));
     }
 
     @Test
+    @WithMockUser(username = "+998941001010", password = "123", authorities = {"ADD_CATEGORY, GET_CATEGORY"})
     void shouldDeleteCategoryAndItsProducts() {
         productRepository.deleteAll();
         categoryRepository.saveAndFlush(category);

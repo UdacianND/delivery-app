@@ -15,6 +15,8 @@ import uz.md.shopapp.exceptions.AlreadyExistsException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.repository.InstitutionTypeRepository;
 import uz.md.shopapp.service.contract.InstitutionTypeService;
+import uz.md.shopapp.util.Mock;
+import uz.md.shopapp.util.TestUtil;
 
 import java.util.List;
 
@@ -24,12 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @Transactional
 public class InstitutionTypeServiceTest {
-
-    private static final String NAME_UZ = "typeUz";
-    private static final String NAME_RU = "typeRu";
-
-    private static final String DESCRIPTION_UZ = "descriptionUz";
-    private static final String DESCRIPTION_RU = "descriptionRu";
 
     private static final String ADDING_NAME_UZ = "addingTypeUz";
     private static final String ADDING_NAME_RU = "addingTypeRu";
@@ -46,11 +42,7 @@ public class InstitutionTypeServiceTest {
 
     @BeforeEach
     void setup() {
-        institutionType = new InstitutionType(
-                NAME_UZ,
-                NAME_RU,
-                DESCRIPTION_UZ,
-                DESCRIPTION_RU);
+        institutionType = Mock.getInstitutionType();
     }
 
     @Test
@@ -77,7 +69,7 @@ public class InstitutionTypeServiceTest {
     void shouldNotAddAlreadyExistedName1() {
         institutionTypeRepository.saveAndFlush(institutionType);
         InstitutionTypeAddDTO addDTO = new InstitutionTypeAddDTO(
-                NAME_UZ,
+                institutionType.getNameUz(),
                 ADDING_NAME_RU,
                 ADDING_DESCRIPTION_UZ,
                 ADDING_DESCRIPTION_RU
@@ -90,7 +82,7 @@ public class InstitutionTypeServiceTest {
         institutionTypeRepository.saveAndFlush(institutionType);
         InstitutionTypeAddDTO addDTO = new InstitutionTypeAddDTO(
                 ADDING_NAME_UZ,
-                NAME_RU,
+                institutionType.getNameRu(),
                 ADDING_DESCRIPTION_UZ,
                 ADDING_DESCRIPTION_RU
         );
@@ -106,10 +98,10 @@ public class InstitutionTypeServiceTest {
         assertTrue(byId.isSuccess());
         InstitutionTypeDTO data = byId.getData();
 
-        assertEquals(NAME_UZ, data.getNameUz());
-        assertEquals(NAME_RU, data.getNameRu());
-        assertEquals(DESCRIPTION_UZ, data.getDescriptionUz());
-        assertEquals(DESCRIPTION_RU, data.getDescriptionRu());
+        assertEquals(institutionType.getNameUz(), data.getNameUz());
+        assertEquals(institutionType.getNameRu(), data.getNameRu());
+        assertEquals(institutionType.getDescriptionUz(), data.getDescriptionUz());
+        assertEquals(institutionType.getDescriptionRu(), data.getDescriptionRu());
     }
 
     @Test
@@ -189,47 +181,37 @@ public class InstitutionTypeServiceTest {
     @Test
     void shouldGetAllByPage() {
         institutionTypeRepository.deleteAll();
-        institutionTypeRepository.saveAll(List.of(
-                new InstitutionType("type1", "type1", "description1", "description1"),
-                new InstitutionType("type2", "type2", "description2", "description2"),
-                new InstitutionType("type3", "type3", "description3", "description3"),
-                new InstitutionType("type4", "type4", "description4", "description4")
-        ));
+        institutionTypeRepository.saveAll(TestUtil.generateMockInstitutionTypes(5));
 
         ApiResult<List<InstitutionTypeDTO>> all = institutionTypeService.getAllByPage("0-2");
         assertTrue(all.isSuccess());
         List<InstitutionTypeDTO> data = all.getData();
         assertEquals(2, data.size());
-
-        for (int i = 0; i < data.size(); i++) {
-            assertEquals("type" + (i + 1), data.get(i).getNameUz());
-            assertEquals("type" + (i + 1), data.get(i).getNameRu());
-            assertEquals("description" + (i + 1), data.get(i).getDescriptionUz());
-            assertEquals("description" + (i + 1), data.get(i).getDescriptionRu());
-        }
+        List<InstitutionType> list = institutionTypeRepository.findAll();
+        checkTypesEquality(data, list.subList(0, 2));
     }
 
     @Test
     void shouldGetAllByPage2() {
 
         institutionTypeRepository.deleteAll();
-        institutionTypeRepository.saveAll(List.of(
-                new InstitutionType("type1", "type1", "description1", "description1"),
-                new InstitutionType("type2", "type2", "description2", "description2"),
-                new InstitutionType("type3", "type3", "description3", "description3"),
-                new InstitutionType("type4", "type4", "description4", "description4")
-        ));
-
+        institutionTypeRepository.saveAll(TestUtil.generateMockInstitutionTypes(5));
         ApiResult<List<InstitutionTypeDTO>> all = institutionTypeService.getAllByPage("1-2");
         assertTrue(all.isSuccess());
         List<InstitutionTypeDTO> data = all.getData();
         assertEquals(2, data.size());
+        List<InstitutionType> list = institutionTypeRepository.findAll();
+        checkTypesEquality(data, list.subList(2, 4));
+    }
 
-        for (int i = 0; i < data.size(); i++) {
-            assertEquals("type" + (i + 3), data.get(i).getNameUz());
-            assertEquals("type" + (i + 3), data.get(i).getNameRu());
-            assertEquals("description" + (i + 3), data.get(i).getDescriptionUz());
-            assertEquals("description" + (i + 3), data.get(i).getDescriptionRu());
+    private void checkTypesEquality(List<InstitutionTypeDTO> actual, List<InstitutionType> expected) {
+        assertEquals(actual.size(), expected.size());
+        for (int i = 0; i < actual.size(); i++) {
+            assertEquals(actual.get(i).getId(), expected.get(i).getId());
+            assertEquals(actual.get(i).getNameUz(), expected.get(i).getNameUz());
+            assertEquals(actual.get(i).getNameRu(), expected.get(i).getNameRu());
+            assertEquals(actual.get(i).getDescriptionUz(), expected.get(i).getDescriptionUz());
+            assertEquals(actual.get(i).getDescriptionRu(), expected.get(i).getDescriptionRu());
         }
     }
 
@@ -242,11 +224,8 @@ public class InstitutionTypeServiceTest {
 
     @Test
     void shouldNotDeleteNotFound() {
-        assertThrows(NotFoundException.class,() -> institutionTypeService.delete(15L));
+        assertThrows(NotFoundException.class, () -> institutionTypeService.delete(15L));
     }
-
-
-
 
 
 }

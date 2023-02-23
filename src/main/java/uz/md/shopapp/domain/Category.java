@@ -2,19 +2,16 @@ package uz.md.shopapp.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import uz.md.shopapp.domain.template.AbsLongEntity;
 
-import java.util.Collection;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table
 @Builder
@@ -31,8 +28,8 @@ public class Category extends AbsLongEntity {
     private String descriptionUz;
     private String descriptionRu;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Collection<Product> products;
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL)
+    private List<Product> products;
 
     @ManyToOne
     @JoinColumn(nullable = false)

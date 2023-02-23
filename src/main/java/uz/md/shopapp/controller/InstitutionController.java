@@ -86,7 +86,6 @@ public class InstitutionController {
         return institutionService.add(dto);
     }
 
-
     @PutMapping("/edit")
     @Operation(description = "Edit a institution")
     @CheckAuth(permission = PermissionEnum.EDIT_INSTITUTION)

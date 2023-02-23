@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table
 @Builder
@@ -32,7 +31,6 @@ public class InstitutionType extends AbsLongEntity {
     private String descriptionRu;
 
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
-    @ToString.Exclude
     private List<Institution> institutions;
 
     public InstitutionType(String nameUz, String nameRu, String descriptionUz, String descriptionRu) {

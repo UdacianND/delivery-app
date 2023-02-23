@@ -21,6 +21,7 @@ import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.ProductMapper;
 import uz.md.shopapp.repository.CategoryRepository;
 import uz.md.shopapp.repository.ProductRepository;
+import uz.md.shopapp.repository.UserRepository;
 import uz.md.shopapp.service.QueryService;
 import uz.md.shopapp.service.contract.FilesStorageService;
 import uz.md.shopapp.service.contract.ProductService;
@@ -48,12 +49,17 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final QueryService queryService;
     private final FilesStorageService filesStorageService;
+    private final UserRepository userRepository;
 
     private Product getById(Long id) {
         return productRepository
                 .findById(id)
                 .orElseThrow(() -> {
-                    throw new NotFoundException("PRODUCT_NOT_FOUND_WITH_ID" + id);
+                    throw NotFoundException.builder()
+                            .messageRu("")
+                            .messageUz("PRODUCT_NOT_FOUND_WITH_ID" + id)
+                            .build();
+
                 });
     }
 
@@ -69,21 +75,38 @@ public class ProductServiceImpl implements ProductService {
 
         Long managerId = categoryRepository.findMangerIdByCategoryId(dto.getCategoryId());
 
-        User currentUser = CommonUtils.getCurrentUser();
+        if (managerId == null)
+            throw NotFoundException.builder()
+                    .messageRu("")
+                    .messageUz("PRODUCT_OR_ITS_CATEGORY_NOT_FOUND")
+                    .build();
+
+
+        User currentUser = getCurrentUser();
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!currentUser.getId().equals(managerId))
-                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+                throw NotAllowedException.builder()
+                        .messageRu("")
+                        .messageUz("YOU HAVE NO PERMISSION")
+                        .build();
+
 
         if (productRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
-            throw new AlreadyExistsException("PRODUCT_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageRu("")
+                    .messageUz("PRODUCT_NAME_ALREADY_EXISTS")
+                    .build();
+
 
         Product product = productMapper.fromAddDTO(dto);
 
         Category category = categoryRepository
                 .findById(dto.getCategoryId())
-                .orElseThrow(() -> new NotFoundException("CATEGORY_NOT_FOUND"));
-
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("CATEGORY_NOT_FOUND")
+                        .messageRu("")
+                        .build());
         product.setCategory(category);
         return ApiResult
                 .successResponse(productMapper
@@ -91,32 +114,63 @@ public class ProductServiceImpl implements ProductService {
                                 .save(product)));
     }
 
+    private User getCurrentUser() {
+        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
+        return userRepository
+                .findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("USER_NOT_FOUND")
+                        .messageRu("")
+                        .build());
+    }
+
     @Override
     public ApiResult<ProductDTO> edit(ProductEditDTO editDTO) {
 
         Long managerId = categoryRepository.findMangerIdByCategoryId(editDTO.getCategoryId());
 
-        User currentUser = CommonUtils.getCurrentUser();
+        if (managerId == null)
+            throw NotFoundException.builder()
+                    .messageRu("")
+                    .messageUz("PRODUCT_OR_ITS_CATEGORY_NOT_FOUND")
+                    .build();
+
+
+        User currentUser = getCurrentUser();
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!currentUser.getId().equals(managerId))
-                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+                throw NotAllowedException.builder()
+                        .messageRu("")
+                        .messageUz("YOU HAVE NO PERMISSION")
+                        .build();
+
 
         Product product = productRepository
                 .findById(editDTO.getId())
                 .orElseThrow(() -> {
-                    throw new NotFoundException("PRODUCT_NOT_FOUND");
+                    throw NotFoundException.builder()
+                            .messageRu("")
+                            .messageUz("PRODUCT_NOT_FOUND")
+                            .build();
+
                 });
 
         if (productRepository.existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), product.getId()))
 
-            throw new AlreadyExistsException("PRODUCT_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageRu("")
+                    .messageUz("PRODUCT_NAME_ALREADY_EXISTS")
+                    .build();
+
         Product edited = productMapper.fromEditDTO(editDTO, product);
 
         edited.setCategory(categoryRepository
                 .findById(editDTO.getCategoryId())
-                .orElseThrow(() -> new NotFoundException("CATEGORY_NOT_FOUND")));
-
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("CATEGORY_NOT_FOUND")
+                        .messageRu("")
+                        .build()));
         return ApiResult
                 .successResponse(productMapper
                         .toDTO(productRepository.save(edited)));
@@ -125,17 +179,31 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ApiResult<Void> delete(Long id) {
 
-        Long managerId = productRepository.findMangerIdByProductId(id);
+        Long managerId = productRepository.findMangerIdById(id);
 
-        User currentUser = CommonUtils.getCurrentUser();
+        if (managerId == null)
+            throw NotFoundException.builder()
+                    .messageRu("")
+                    .messageUz("PRODUCT_OR_ITS_CATEGORY_NOT_FOUND")
+                    .build();
+
+
+        User currentUser = getCurrentUser();
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!currentUser.getId().equals(managerId))
-                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+                throw NotAllowedException.builder()
+                        .messageRu("")
+                        .messageUz("YOU HAVE NO PERMISSION")
+                        .build();
 
 
         if (!productRepository.existsById(id))
-            throw new NotFoundException("PRODUCT_DOES_NOT_EXIST");
+            throw NotFoundException.builder()
+                    .messageRu("")
+                    .messageUz("PRODUCT_DOES_NOT_EXIST")
+                    .build();
+
         productRepository.deleteById(id);
         return ApiResult.successResponse();
     }
@@ -143,7 +211,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ApiResult<List<ProductDTO>> getAllByCategory(Long id) {
         if (!categoryRepository.existsById(id))
-            throw new NotFoundException("CATEGORY_NOT_FOUND_WITH_ID" + id);
+            throw NotFoundException.builder()
+                    .messageRu("")
+                    .messageUz("CATEGORY_NOT_FOUND_WITH_ID" + id)
+                    .build();
+
         return ApiResult.successResponse(
                 productMapper
                         .toDTOList(productRepository
@@ -175,7 +247,10 @@ public class ProductServiceImpl implements ProductService {
     public ApiResult<Void> setImage(Long productId, MultipartFile image) {
         Product product = productRepository
                 .findById(productId)
-                .orElseThrow(() -> new NotFoundException("PRODUCT NOT FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("PRODUCT NOT FOUND")
+                        .messageRu("")
+                        .build());
         filesStorageService.save(image, productsImagesRoot);
         product.setImageUrl(productsImagesRoot.toUri() + image.getOriginalFilename());
         productRepository.save(product);

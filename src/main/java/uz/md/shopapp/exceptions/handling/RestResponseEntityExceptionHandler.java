@@ -15,9 +15,15 @@ import uz.md.shopapp.exceptions.*;
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({AlreadyExistsException.class})
-    public ResponseEntity<ErrorData> handleAccessDeniedException(Exception ex) {
-        return new ResponseEntity<>(new ErrorData(ex.getMessage(), ex.getMessage()),
-                HttpStatus.FORBIDDEN);
+    public ResponseEntity<ErrorData> handleAlreadyExisted(AlreadyExistsException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorData.builder()
+                        .messageUz("Alloqachon mavjud")
+                        .messageRu("")
+                        .userMsg(ex.getMessage())
+                        .devMsg(ex.getMessage())
+                        .build());
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)

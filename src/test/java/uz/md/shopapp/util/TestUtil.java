@@ -85,6 +85,7 @@ public final class TestUtil {
         assertEquals(actual.size(), expected.size());
         for (int i = 0; i < actual.size(); i++) {
             assertEquals(actual.get(i).getId(), expected.get(i).getId());
+            assertEquals(actual.get(i).getInstitutionId(), expected.get(i).getInstitution().getId());
             assertEquals(actual.get(i).getNameUz(), expected.get(i).getNameUz());
             assertEquals(actual.get(i).getNameRu(), expected.get(i).getNameRu());
             assertEquals(actual.get(i).getDescriptionUz(), expected.get(i).getDescriptionUz());
@@ -135,5 +136,13 @@ public final class TestUtil {
             products.add(new Category("nameUz" + (i + 1), "nameRu" + (i + 1), "description", "description", null, institution));
         }
         return products;
+    }
+
+    public static List<InstitutionType> generateMockInstitutionTypes(int count) {
+        List<InstitutionType> institutionTypes = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            institutionTypes.add(new InstitutionType("nameUz" + (i + 1), "nameRu" + (i + 1), "description", "description"));
+        }
+        return institutionTypes;
     }
 }

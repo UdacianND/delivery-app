@@ -2,6 +2,7 @@ package uz.md.shopapp.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uz.md.shopapp.controller.AuthController;
+import uz.md.shopapp.controller.InstitutionTypeController;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +18,7 @@ public interface AppConstants {
     String AUTHENTICATION_HEADER = "Authentication";
 
     String[] OPEN_PAGES = {
+            InstitutionTypeController.BASE_URL+"/**",
             AuthController.BASE_URL + "/**"
     };
 

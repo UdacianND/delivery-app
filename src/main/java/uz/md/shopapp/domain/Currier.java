@@ -1,6 +1,7 @@
 package uz.md.shopapp.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -21,6 +22,7 @@ import uz.md.shopapp.domain.template.AbsLongEntity;
 public class Currier extends AbsLongEntity {
 
     @OneToOne
+    @JoinColumn(nullable = false)
     private User user;
     private String carNumber;
     private boolean online;

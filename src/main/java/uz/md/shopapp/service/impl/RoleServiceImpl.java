@@ -29,7 +29,10 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public ApiResult<RoleDTO> add(RoleAddDTO dto) {
         if (roleRepository.existsByNameIgnoreCase(dto.getName()))
-            throw new AlreadyExistsException("ROLE_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageUz("ROLE_NAME_ALREADY_EXISTS")
+                    .messageRu("")
+                    .build();
         Role role = roleMapper.fromAddDTO(dto);
         return ApiResult
                 .successResponse(roleMapper
@@ -50,7 +53,10 @@ public class RoleServiceImpl implements RoleService {
                 .successResponse(roleMapper
                         .toDTO(roleRepository
                                 .findById(id)
-                                .orElseThrow(() -> new NotFoundException("ROLE_NOT_FOUND_WITH_ID " + id))));
+                                .orElseThrow(() -> NotFoundException.builder()
+                                        .messageUz("ROLE_NOT_FOUND_WITH_ID " + id)
+                                        .messageRu("")
+                                        .build())));
     }
 
     @Override
@@ -58,7 +64,10 @@ public class RoleServiceImpl implements RoleService {
 
         Role role = roleRepository
                 .findById(dto.getId())
-                .orElseThrow(() -> new NotFoundException("ROLE_NOT_FOUND_WITH_ID"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("ROLE_NOT_FOUND_WITH_ID")
+                        .messageRu("")
+                        .build());
 
         Role role1 = roleMapper.fromEditDTO(role, dto);
         return ApiResult

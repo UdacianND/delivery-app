@@ -75,7 +75,10 @@ public class AuthServiceImpl implements AuthService {
         User user = authenticate(dto.getPhoneNumber(), dto.getSmsCode());
 
         if (user.getCodeValidTill().isBefore(LocalDateTime.now()))
-            throw new NotAllowedException("SMS CODE IS NOT VALID");
+            throw NotAllowedException.builder()
+                    .messageUz("SMS kodi yaroqsiz")
+                    .messageRu("")
+                    .build();
 
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
         String accessToken = jwtTokenProvider.generateAccessToken(user, Timestamp.valueOf(tokenIssuedAt));
@@ -95,7 +98,8 @@ public class AuthServiceImpl implements AuthService {
         User user = authenticate(dto.getPhoneNumber(), dto.getPassword());
 
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
-        String accessToken = jwtTokenProvider.generateAccessToken(user, Timestamp.valueOf(tokenIssuedAt));
+        String accessToken = jwtTokenProvider.generateAccessToken(user,
+                Timestamp.valueOf(tokenIssuedAt));
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
@@ -110,15 +114,23 @@ public class AuthServiceImpl implements AuthService {
         log.info("Employee registration with " + dto);
 
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber()))
-            throw new ConflictException("PHONE_NUMBER_ALREADY_EXISTS");
+            throw ConflictException.builder()
+                    .messageUz("Telefon raqam allaqachon mavjud")
+                    .messageRu("")
+                    .build();
 
         User user = userMapper.fromEmployeeAddDTO(dto);
 
         Role role = roleRepository
                 .findById(dto.getRoleId())
-                .orElseThrow(() -> new NotFoundException("ROLE_NOT_FOUND"));
-
-        user.setActive(false);
+                .orElseThrow(() -> NotFoundException
+                        .builder()
+                        .messageUz("Role topilmadi")
+                        .messageRu("")
+                        .build()
+                );
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setActive(true);
         user.setRole(role);
         userRepository.save(user);
         return ApiResult.successResponse();
@@ -134,11 +146,20 @@ public class AuthServiceImpl implements AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return (User) authentication.getPrincipal();
         } catch (DisabledException | LockedException | CredentialsExpiredException disabledException) {
-            throw new NotEnabledException("USER_IS_DISABLED");
+            throw NotEnabledException.builder()
+                    .messageUz("Foydalanuvchi aktiv emas")
+                    .messageRu("")
+                    .build();
         } catch (UsernameNotFoundException usernameNotFoundException) {
-            throw new NotFoundException("PHONE_NUMBER_NOT_FOUND");
+            throw NotFoundException.builder()
+                    .messageUz("Telefon raqam topilmadi")
+                    .messageRu("")
+                    .build();
         } catch (BadCredentialsException badCredentialsException) {
-            throw new BadCredentialsException("INVALID_PHONE_NUMBER_OR_PASSWORD");
+            throw uz.md.shopapp.exceptions.BadCredentialsException.builder()
+                    .messageUz("INVALID_PHONE_NUMBER_OR_PASSWORD")
+                    .messageRu("")
+                    .build();
         }
     }
 
@@ -148,12 +169,19 @@ public class AuthServiceImpl implements AuthService {
         log.info("User registration with " + dto);
 
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber()))
-            throw new ConflictException("PHONE_NUMBER_ALREADY_EXISTS");
+            throw ConflictException.builder()
+                    .messageUz("Telefon raqam allaqachon mavjud")
+                    .messageRu("")
+                    .build();
 
         User user = userMapper.fromClientAddDTO(dto);
         Role role = roleRepository
                 .findByName(clientRoleName)
-                .orElseThrow(() -> new NotFoundException("DEFAULT_ROLE_NOT_FOUND"));
+                .orElseThrow(() -> NotFoundException
+                        .builder()
+                        .messageUz("Standart role topilmadi")
+                        .messageRu("")
+                        .build());
         user.setActive(false);
         user.setRole(role);
         userRepository.save(user);
@@ -165,18 +193,27 @@ public class AuthServiceImpl implements AuthService {
     public ApiResult<String> getSMSCode(String phoneNumber) {
         User user = userRepository
                 .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("USER NOT FOUND WITH PHONE NUMBER"));
+                .orElseThrow(() -> NotFoundException
+                        .builder()
+                        .messageUz(" Ushbu Telefon raqamdagi Foydalanuvchi topilmadi ")
+                        .messageRu("")
+                        .build());
         String smsCode = RandomStringUtils.random(4, false, true);
         user.setPassword(passwordEncoder.encode(smsCode));
         user.setCodeValidTill(LocalDateTime.now().plus(smsValidTill, ChronoUnit.valueOf(smsValidTillIn)));
         // TODO: 2/15/2023 Sms service send sms to client
         userRepository.save(user);
         System.out.println("********************** smsCode = " + smsCode);
-        return ApiResult.successResponse("SMS code sent");
+        return ApiResult.successResponse("SMS kod jo'natildi");
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByPhoneNumber(username).orElseThrow(() -> new UsernameNotFoundException("User Not found with username " + username));
+        return userRepository.findByPhoneNumber(username)
+                .orElseThrow(() -> NotFoundException
+                        .builder()
+                        .messageUz("Ushbu nomli :u Foydalanuvchi topilmadi ".replaceFirst(":u",username))
+                        .messageRu("")
+                        .build());
     }
 }

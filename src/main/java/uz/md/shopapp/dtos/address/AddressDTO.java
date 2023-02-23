@@ -1,6 +1,7 @@
 package uz.md.shopapp.dtos.address;
 
 import lombok.*;
+import uz.md.shopapp.dtos.institution.LocationDto;
 
 @AllArgsConstructor
 
@@ -14,4 +15,5 @@ public class AddressDTO {
     private String street;
     private String city;
     private Long userId;
+    private LocationDto location;
 }

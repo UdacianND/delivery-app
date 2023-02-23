@@ -20,12 +20,16 @@ import uz.md.shopapp.domain.template.AbsLongEntity;
 @SQLDelete(sql = "UPDATE product SET deleted = true where id = ?")
 public class Product extends AbsLongEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nameUz;
+
+    @Column(nullable = false, unique = true)
     private String nameRu;
     private String imageUrl;
     private String descriptionUz;
     private String descriptionRu;
+
+    @Column(nullable = false)
     private Double price;
 
     @ManyToOne

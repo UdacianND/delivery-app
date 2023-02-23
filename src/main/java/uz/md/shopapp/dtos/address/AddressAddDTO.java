@@ -3,6 +3,7 @@ package uz.md.shopapp.dtos.address;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import uz.md.shopapp.dtos.institution.LocationDto;
 
 import java.util.UUID;
 
@@ -13,15 +14,17 @@ import java.util.UUID;
 @ToString
 public class AddressAddDTO {
 
-    @NotNull(message = "houseNumber must not be null")
+    @NotNull(message = "Uy raqami kiritilishi shart")
     private Integer houseNumber;
 
-    @NotNull(message = "street must not be blank")
+    @NotNull(message = "koçha kiritilishi shart")
     private String street;
 
-    @NotBlank(message = "city must not be blank")
+    @NotBlank(message = "Shahar kiritilishi shart")
     private String city;
 
-    @NotNull(message = "user id must not be null")
+    private LocationDto location;
+
+    @NotNull(message = "Foydalanuvchi idsi kiritilishi shart")
     private Long userId;
 }

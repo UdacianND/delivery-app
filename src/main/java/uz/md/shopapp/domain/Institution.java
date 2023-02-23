@@ -28,22 +28,26 @@ public class Institution extends AbsLongEntity {
     private String imageUrl;
 
     @OneToOne
-    private Address address;
+    @JoinColumn(nullable = false)
+    private Location location;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
     private InstitutionType type;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution")
     private List<Category> categories;
 
     @OneToOne
+    @JoinColumn(nullable = false)
     private User manager;
 
-    public Institution(String nameUz, String nameRu, String descriptionUz, String descriptionRu, InstitutionType type, User manager) {
+    public Institution(String nameUz, String nameRu, String descriptionUz, String descriptionRu, Location location, InstitutionType type, User manager) {
         this.nameUz = nameUz;
         this.nameRu = nameRu;
         this.descriptionUz = descriptionUz;
         this.descriptionRu = descriptionRu;
+        this.location = location;
         this.type = type;
         this.manager = manager;
     }

@@ -1,12 +1,18 @@
 package uz.md.shopapp.exceptions;
 
+import lombok.Builder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
+@Builder
 public class NotFoundException extends RuntimeException {
+    private String messageUz;
+    private String messageRu;
 
-    public NotFoundException(String message){
-        super(message);
+    public NotFoundException(String messageUz, String messageRu) {
+        super(messageUz);
+        this.messageUz = messageUz;
+        this.messageRu = messageRu;
     }
 }

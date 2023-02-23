@@ -16,6 +16,7 @@ import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.CategoryMapper;
 import uz.md.shopapp.repository.CategoryRepository;
 import uz.md.shopapp.repository.InstitutionRepository;
+import uz.md.shopapp.repository.UserRepository;
 import uz.md.shopapp.service.contract.CategoryService;
 import uz.md.shopapp.utils.CommonUtils;
 
@@ -27,30 +28,42 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final InstitutionRepository institutionRepository;
+    private final UserRepository userRepository;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository,
                                CategoryMapper categoryMapper,
-                               InstitutionRepository institutionRepository) {
+                               InstitutionRepository institutionRepository,
+                               UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
         this.institutionRepository = institutionRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public ApiResult<CategoryDTO> add(CategoryAddDTO dto) {
 
-        User currentUser = CommonUtils.getCurrentUser();
+        User currentUser = getCurrentUser();
         Institution institution = institutionRepository
                 .findById(dto.getInstitutionId())
-                .orElseThrow(() -> new NotFoundException("INSTITUTION NOT FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("Muassasa topilmadi")
+                        .messageRu("")
+                        .build());
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!institution.getManager().getId().equals(currentUser.getId()))
-                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+                throw NotAllowedException.builder()
+                        .messageUz("Sizda ruxsat yo'q")
+                        .messageRu("")
+                        .build();
 
         if (categoryRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()) ||
                 categoryRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
-            throw new AlreadyExistsException("CATEGORY_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageUz("Kategoriya nomi allaqachon mavjud")
+                    .messageRu("")
+                    .build();
         Category category = categoryMapper
                 .fromAddDTO(dto);
         category.setInstitution(institution);
@@ -66,32 +79,58 @@ public class CategoryServiceImpl implements CategoryService {
         return ApiResult.successResponse(categoryMapper
                 .toDTO(categoryRepository
                         .findById(id)
-                        .orElseThrow(() -> new NotFoundException("CATEGORY_NOT_FOUND"))));
+                        .orElseThrow(() -> NotFoundException.builder()
+                                .messageUz("Kategoriya topilmadi")
+                                .messageRu("")
+                                .build())));
     }
 
     @Override
     public ApiResult<CategoryDTO> edit(CategoryEditDTO editDTO) {
 
-        User currentUser = CommonUtils.getCurrentUser();
+        User currentUser = getCurrentUser();
         Institution institution = institutionRepository
                 .findById(editDTO.getInstitutionId())
-                .orElseThrow(() -> new NotFoundException("INSTITUTION NOT FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("Muassasa topilmadi")
+                        .messageRu("")
+                        .build());
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!institution.getManager().getId().equals(currentUser.getId()))
-                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+                throw NotAllowedException
+                        .builder()
+                        .messageUz("Sizda ruxsat yo'q")
+                        .messageRu("")
+                        .build();
 
         Category editing = categoryRepository
                 .findById(editDTO.getId())
-                .orElseThrow(() -> new NotFoundException("CATEGORY_NOT_FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("Kategoriya topilmadi")
+                        .messageRu("")
+                        .build());
 
         if (categoryRepository.existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), editing.getId()))
-            throw new AlreadyExistsException("CATEGORY_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageUz("Kategoriya nomi allaqachon mavjud")
+                    .messageRu("")
+                    .build();
 
         Category category = categoryMapper.fromEditDTO(editDTO, editing);
         category.setInstitution(institution);
         return ApiResult.successResponse(categoryMapper
                 .toDTO(categoryRepository.save(category)));
+    }
+
+    private User getCurrentUser() {
+        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
+        return userRepository
+                .findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
+                        .messageRu("")
+                        .build());
     }
 
     @Override
@@ -105,10 +144,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ApiResult<List<CategoryInfoDTO>> getAllForInfo() {
-        return ApiResult.successResponse(
-                categoryMapper.toInfoDTOList(
-                        categoryRepository.findAllForInfo()
-                ));
+        return ApiResult.successResponse(categoryRepository
+                .findAllForInfo());
     }
 
     @Override
@@ -121,22 +158,29 @@ public class CategoryServiceImpl implements CategoryService {
     public ApiResult<List<CategoryInfoDTO>> getAllByInstitutionIdAndPage(Long id, String page) {
         int[] paged = {Integer.parseInt(page.split("-")[0]),
                 Integer.parseInt(page.split("-")[1])};
-        return ApiResult.successResponse(categoryRepository
-                .findAllForInfoByInstitutionId(id, PageRequest.of(paged[0], paged[1]))
-                .getContent());
+        return ApiResult.successResponse(categoryMapper
+                .toInfoDTOList(categoryRepository
+                        .findAllForInfoByInstitutionId(id, PageRequest.of(paged[0], paged[1]))
+                        .getContent()));
     }
 
     @Override
     public ApiResult<Void> delete(Long id) {
 
         if (!categoryRepository.existsById(id))
-            throw new NotFoundException("CATEGORY_NOT_FOUND");
+            throw NotFoundException.builder()
+                    .messageUz("CATEGORY_NOT_FOUND")
+                    .messageRu("")
+                    .build();
         Long managerId = categoryRepository.findMangerIdByCategoryId(id);
-        User currentUser = CommonUtils.getCurrentUser();
+        User currentUser = getCurrentUser();
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!currentUser.getId().equals(managerId))
-                throw new NotAllowedException("YOU HAVE NO PERMISSION");
+                throw NotAllowedException.builder()
+                        .messageUz("YOU HAVE NO PERMISSION")
+                        .messageRu("")
+                        .build();
 
         categoryRepository.deleteById(id);
         return ApiResult.successResponse();

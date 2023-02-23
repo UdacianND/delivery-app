@@ -6,15 +6,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.md.shopapp.domain.Institution;
+import uz.md.shopapp.domain.User;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.institution.InstitutionAddDTO;
 import uz.md.shopapp.dtos.institution.InstitutionDTO;
 import uz.md.shopapp.dtos.institution.InstitutionEditDTO;
 import uz.md.shopapp.dtos.institution.InstitutionInfoDTO;
 import uz.md.shopapp.exceptions.AlreadyExistsException;
+import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.InstitutionMapper;
 import uz.md.shopapp.repository.InstitutionRepository;
+import uz.md.shopapp.repository.UserRepository;
 import uz.md.shopapp.service.contract.FilesStorageService;
 import uz.md.shopapp.service.contract.InstitutionService;
 import uz.md.shopapp.utils.AppConstants;
@@ -38,24 +41,43 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final InstitutionRepository institutionRepository;
     private final InstitutionMapper institutionMapper;
     private final FilesStorageService filesStorageService;
+    private final UserRepository userRepository;
 
     public InstitutionServiceImpl(InstitutionRepository institutionRepository,
                                   InstitutionMapper institutionMapper,
-                                  FilesStorageService filesStorageService) {
+                                  FilesStorageService filesStorageService,
+                                  UserRepository userRepository) {
         this.institutionRepository = institutionRepository;
         this.institutionMapper = institutionMapper;
         this.filesStorageService = filesStorageService;
+        this.userRepository = userRepository;
     }
 
     @Override
     public ApiResult<InstitutionDTO> add(InstitutionAddDTO dto) {
 
         if (institutionRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
-            throw new AlreadyExistsException("INSTITUTION_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageRu("")
+                    .messageUz("INSTITUTION_NAME_ALREADY_EXISTS")
+                    .build();
 
         Institution institution = institutionMapper
                 .fromAddDTO(dto);
+        User manager = userRepository
+                .findById(dto.getManagerId())
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("MANAGER_NOT_FOUND")
+                        .messageRu("")
+                        .build());
 
+        if (!manager.getRole().getName().equals("manager"))
+            throw NotAllowedException.builder()
+                    .messageRu("")
+                    .messageUz("User with id " + dto.getManagerId() + " is not a manager")
+                    .build();
+
+        institution.setManager(manager);
         return ApiResult
                 .successResponse(institutionMapper
                         .toDTO(institutionRepository
@@ -67,7 +89,10 @@ public class InstitutionServiceImpl implements InstitutionService {
         return ApiResult.successResponse(institutionMapper
                 .toDTO(institutionRepository
                         .findById(id)
-                        .orElseThrow(() -> new NotFoundException("INSTITUTION_NOT_FOUND"))));
+                        .orElseThrow(() -> NotFoundException.builder()
+                                .messageUz("INSTITUTION_NOT_FOUND")
+                                .messageRu("")
+                                .build())));
     }
 
     @Override
@@ -75,10 +100,16 @@ public class InstitutionServiceImpl implements InstitutionService {
 
         Institution editing = institutionRepository
                 .findById(editDTO.getId())
-                .orElseThrow(() -> new NotFoundException("INSTITUTION_NOT_FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("INSTITUTION_NOT_FOUND")
+                        .messageRu("")
+                        .build());
 
         if (institutionRepository.existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), editing.getId()))
-            throw new AlreadyExistsException("INSTITUTION_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageRu("")
+                    .messageUz("INSTITUTION_NAME_ALREADY_EXISTS")
+                    .build();
 
         Institution institution = institutionMapper.fromEditDTO(editDTO, editing);
 
@@ -124,7 +155,10 @@ public class InstitutionServiceImpl implements InstitutionService {
     public ApiResult<Void> setImage(Long institutionId, MultipartFile image) {
         Institution institution = institutionRepository
                 .findById(institutionId)
-                .orElseThrow(() -> new NotFoundException("INSTITUTION NOT FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("INSTITUTION NOT FOUND")
+                        .messageRu("")
+                        .build());
         filesStorageService.save(image, institutionsImagesRoot);
         institution.setImageUrl(institutionsImagesRoot.toUri() + image.getOriginalFilename());
         institutionRepository.save(institution);

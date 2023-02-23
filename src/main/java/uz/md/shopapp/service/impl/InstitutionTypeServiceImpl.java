@@ -34,7 +34,10 @@ public class InstitutionTypeServiceImpl implements InstitutionTypeService {
 
         if (institutionTypeRepository
                 .existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
-            throw new AlreadyExistsException("INSTITUTION_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageUz("INSTITUTION_NAME_ALREADY_EXISTS")
+                    .messageRu("")
+                    .build();
 
         return ApiResult
                 .successResponse(institutionTypeMapper
@@ -48,7 +51,10 @@ public class InstitutionTypeServiceImpl implements InstitutionTypeService {
         return ApiResult.successResponse(institutionTypeMapper
                 .toDTO(institutionTypeRepository
                         .findById(id)
-                        .orElseThrow(() -> new NotFoundException("INSTITUTION_NOT_FOUND"))));
+                        .orElseThrow(() -> NotFoundException.builder()
+                                .messageUz("INSTITUTION_NOT_FOUND")
+                                .messageRu("")
+                                .build())));
     }
 
     @Override
@@ -56,10 +62,16 @@ public class InstitutionTypeServiceImpl implements InstitutionTypeService {
 
         InstitutionType editing = institutionTypeRepository
                 .findById(editDTO.getId())
-                .orElseThrow(() -> new NotFoundException("INSTITUTION_TYPE_NOT_FOUND"));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("INSTITUTION_TYPE_NOT_FOUND")
+                        .messageRu("")
+                        .build());
 
         if (institutionTypeRepository.existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), editing.getId()))
-            throw new AlreadyExistsException("INSTITUTION_NAME_ALREADY_EXISTS");
+            throw AlreadyExistsException.builder()
+                    .messageUz("INSTITUTION_NAME_ALREADY_EXISTS")
+                    .messageRu("")
+                    .build();
 
         InstitutionType institutionType = institutionTypeMapper.fromEditDTO(editDTO, editing);
 
@@ -91,7 +103,10 @@ public class InstitutionTypeServiceImpl implements InstitutionTypeService {
     public ApiResult<Void> delete(Long id) {
 
         if (!institutionTypeRepository.existsById(id))
-            throw new NotFoundException("INSTITUTION_NOT_FOUND");
+            throw NotFoundException.builder()
+                    .messageUz("INSTITUTION_NOT_FOUND")
+                    .messageRu("")
+                    .build();
 
         institutionTypeRepository.deleteById(id);
         return ApiResult.successResponse();

@@ -2,15 +2,15 @@ package uz.md.shopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uz.md.shopapp.dtos.ApiResult;
+import uz.md.shopapp.dtos.address.AddressAddDTO;
 import uz.md.shopapp.dtos.address.AddressDTO;
 import uz.md.shopapp.dtos.order.OrderDTO;
-import uz.md.shopapp.dtos.user.ClientDto;
+import uz.md.shopapp.dtos.user.ClientMeDto;
 import uz.md.shopapp.service.contract.ClientService;
 import uz.md.shopapp.utils.AppConstants;
 
@@ -28,20 +28,39 @@ public class ClientController {
 
     @GetMapping("/me")
     @Operation(description = "Getting client")
-    public ApiResult<ClientDto> getMe(){
+    public ApiResult<ClientMeDto> getMe() {
         return clientService.getMe();
     }
 
     @GetMapping("/my-orders")
     @Operation(description = "Getting client orders")
-    public ApiResult<List<OrderDTO>> getClientOrders(){
+    public ApiResult<List<OrderDTO>> getClientOrders() {
         return clientService.getMyOrders();
+    }
+
+    @GetMapping("/my-orders/{page}")
+    @Operation(description = "Getting client orders")
+    public ApiResult<List<OrderDTO>> getClientOrdersByPage(@PathVariable String page) {
+        return clientService.getMyOrders(page);
     }
 
     @GetMapping("/my-addresses")
     @Operation(description = "Getting client addresses")
-    public ApiResult<List<AddressDTO>> getClientAddresses(){
+    public ApiResult<List<AddressDTO>> getClientAddresses() {
         return clientService.getMyAddresses();
     }
+
+    @PostMapping("/address/add")
+    @Operation(description = "Adds a new address")
+    public ApiResult<AddressDTO> addNewAddress(@RequestBody @Valid AddressAddDTO addressAddDTO) {
+        return clientService.addAddress(addressAddDTO);
+    }
+
+    @PostMapping("/address/delete/{id}")
+    @Operation(description = "deleted an address")
+    public ApiResult<Void> deleteAddress(@PathVariable Long id) {
+        return clientService.delete(id);
+    }
+
 
 }

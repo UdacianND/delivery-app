@@ -63,4 +63,22 @@ public class QueryService {
                 .setMaxResults(request.getPageCount())
                 .setFirstResult(request.getPage() * request.getPageCount());
     }
+
+    public <T> TypedQuery<T> generateSearchQuery(Class<T> clazz, String value) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(clazz);
+
+        Root<T> root = criteriaQuery.from(clazz);
+        List<Predicate> predicates = new ArrayList<>();
+
+        predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("nameUz")), "%" + value.toUpperCase() + "%"));
+        predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("nameRu")), "%" + value.toUpperCase() + "%"));
+
+        Predicate or = criteriaBuilder.or(predicates.toArray(Predicate[]::new));
+
+        criteriaQuery.where(or);
+        return entityManager
+                .createQuery(criteriaQuery);
+    }
 }
