@@ -117,7 +117,17 @@ public final class TestUtil {
     public static List<Institution> generateMockInstitutions(int count, InstitutionType institutionType, User manager) {
         List<Institution> instances = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            instances.add(new Institution("nameUz" + (i + 1), "nameRu" + (i + 1), "description", "description", institutionType, manager));
+            instances.add(new Institution(
+                    "nameUz" + (i + 1),
+                    "nameRu" + (i + 1),
+                    "description",
+                    "description",
+                    Location.builder()
+                            .latitude(15.0)
+                            .longitude(15.0)
+                            .build(),
+                    institutionType,
+                    manager));
         }
         return instances;
     }
