@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 public class OrderAddDTO {
     private LocationDto location;
-    private LocalDateTime deliveryTime;
+    private LocalDateTime deliveryTime = LocalDateTime.now();
     @NotNull(message = "ordered products must not be null")
     private List<OrderProductAddDTO> orderProducts;
 }
