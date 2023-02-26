@@ -35,7 +35,6 @@ import uz.md.shopapp.service.contract.AuthService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -78,11 +77,6 @@ public class AuthServiceImpl implements AuthService {
     public ApiResult<TokenDTO> loginOrRegisterClient(ClientLoginDTO dto) {
 
         log.info("Client login method called: " + dto);
-
-        Optional<User> byPhoneNumber = userRepository
-                .findByPhoneNumber(dto.getPhoneNumber());
-        if (byPhoneNumber.isEmpty())
-            registerClient(dto);
 
         User user = authenticate(dto.getPhoneNumber(), dto.getSmsCode());
 
@@ -188,18 +182,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResult<Void> registerClient(ClientLoginDTO register) {
+    public ApiResult<Void> registerClient(String phoneNumber) {
 
-        log.info("User registration with " + register);
+        log.info("User registration with " + phoneNumber);
 
-        if (userRepository.existsByPhoneNumber(register.getPhoneNumber()))
+        if (userRepository.existsByPhoneNumber(phoneNumber))
             throw ConflictException.builder()
                     .messageUz("Telefon raqam allaqachon mavjud")
                     .messageRu("")
                     .build();
 
         User user = new User();
-        user.setPhoneNumber(register.getPhoneNumber());
+        user.setPhoneNumber(phoneNumber);
         Role role = roleRepository
                 .findByName(clientRoleName)
                 .orElseThrow(() -> NotFoundException
@@ -216,13 +210,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public ApiResult<String> getSMSCode(String phoneNumber) {
-        User user = userRepository
-                .findByPhoneNumber(phoneNumber)
+
+        if (!userRepository
+                .existsByPhoneNumber(phoneNumber))
+            registerClient(phoneNumber);
+
+        User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> NotFoundException
                         .builder()
                         .messageUz(" Ushbu Telefon raqamdagi Foydalanuvchi topilmadi ")
                         .messageRu("")
                         .build());
+
         String smsCode = RandomStringUtils.random(4, false, true);
 
         System.out.println("=========== smsCode  " + smsCode + " =============== ");

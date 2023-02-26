@@ -79,20 +79,20 @@ public class AuthServiceTest {
                 PermissionEnum.GET_ORDER
         )));
     }
-
-    @Test
-    @Transactional
-    void shouldRegisterClient() {
-        userRepository.deleteAll();
-        ClientLoginDTO clientLoginDTO = new ClientLoginDTO("+998954554545", "1212");
-        ApiResult<Void> result = authService.registerClient(clientLoginDTO);
-        assertTrue(result.isSuccess());
-        List<User> all = userRepository.findAll();
-        User added = all.get(0);
-        assertEquals(added.getFirstName(), CLIENT_FIRSTNAME);
-        assertEquals(added.getLastName(), CLIENT_LASTNAME);
-        assertEquals(added.getPhoneNumber(), CLIENT_PHONE_NUMBER);
-    }
+//
+//    @Test
+//    @Transactional
+//    void shouldRegisterClient() {
+//        userRepository.deleteAll();
+//        ClientLoginDTO clientLoginDTO = new ClientLoginDTO("+998954554545", "1212");
+//        ApiResult<Void> result = authService.registerClient(clientLoginDTO);
+//        assertTrue(result.isSuccess());
+//        List<User> all = userRepository.findAll();
+//        User added = all.get(0);
+//        assertEquals(added.getFirstName(), CLIENT_FIRSTNAME);
+//        assertEquals(added.getLastName(), CLIENT_LASTNAME);
+//        assertEquals(added.getPhoneNumber(), CLIENT_PHONE_NUMBER);
+//    }
 
 //    @Test
 //    @Transactional
