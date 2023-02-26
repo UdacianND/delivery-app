@@ -17,7 +17,6 @@ public interface OrderMapper extends EntityMapper<Order, OrderDTO> {
 
     @Override
     @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "address", expression = " java( addressMapper.toDTO(entity.getAddress()) ) ")
     @Mapping(target = "orderProducts", expression = " java( orderProductMapper.toDTOList(entity.getOrderProducts()) )")
     OrderDTO toDTO(Order entity);
 }

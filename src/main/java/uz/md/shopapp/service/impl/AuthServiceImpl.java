@@ -21,7 +21,6 @@ import uz.md.shopapp.domain.User;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.TokenDTO;
 import uz.md.shopapp.dtos.user.ClientLoginDTO;
-import uz.md.shopapp.dtos.user.ClientRegisterDTO;
 import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
 import uz.md.shopapp.dtos.user.EmployeeRegisterDTO;
 import uz.md.shopapp.exceptions.ConflictException;
@@ -76,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
     private String smsValidTillIn;
 
     @Override
-    public ApiResult<TokenDTO> loginClient(ClientLoginDTO dto) {
+    public ApiResult<TokenDTO> loginOrRegisterClient(ClientLoginDTO dto) {
 
         log.info("Client login method called: " + dto);
 
@@ -86,6 +85,14 @@ public class AuthServiceImpl implements AuthService {
             registerClient(dto);
 
         User user = authenticate(dto.getPhoneNumber(), dto.getSmsCode());
+
+
+        if (!user.getRole().getName().equals("CLIENT"))
+            throw NotFoundException.builder()
+                    .messageUz("Bunday foydalanuvchi topilmadi")
+                    .messageRu("ru")
+                    .build();
+
 
         if (user.getCodeValidTill().isBefore(LocalDateTime.now()))
             throw NotAllowedException.builder()
@@ -108,6 +115,12 @@ public class AuthServiceImpl implements AuthService {
         log.info("Employee login method called: " + dto);
 
         User user = authenticate(dto.getPhoneNumber(), dto.getPassword());
+
+        if (!user.getRole().getName().equals("MANAGER"))
+            throw NotFoundException.builder()
+                    .messageUz("Bunday ishchi topilmadi")
+                    .messageRu("Bunday ishchi topilmadi ru")
+                    .build();
 
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
         String accessToken = jwtTokenProvider.generateAccessToken(user,
@@ -211,6 +224,9 @@ public class AuthServiceImpl implements AuthService {
                         .messageRu("")
                         .build());
         String smsCode = RandomStringUtils.random(4, false, true);
+
+        System.out.println("=========== smsCode  " + smsCode + " =============== ");
+
         user.setPassword(passwordEncoder.encode(smsCode));
         user.setCodeValidTill(LocalDateTime.now().plus(smsValidTill, ChronoUnit.valueOf(smsValidTillIn)));
 
@@ -219,7 +235,7 @@ public class AuthServiceImpl implements AuthService {
                         user.getPhoneNumber().substring(1),
                         "" + smsCode + "-code:birzumda.uz",
                         4546,
-                        "http://localhost:8090/" + AuthController.BASE_URL + "/client/login");
+                        "http://localhost:8090/" + AuthController.BASE_URL + "/client/signin-orsignup");
 //        smsSender.sendSms(sendRequest);
         userRepository.save(user);
         return ApiResult.successResponse("SMS kod jo'natildi");
