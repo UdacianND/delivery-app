@@ -30,13 +30,6 @@ public class AuthController {
     public static final String BASE_URL = AppConstants.BASE_URL + "auth";
     private final AuthService authService;
 
-    @PostMapping(value = "/client/sign-up")
-    @Operation(description = "register user")
-    ApiResult<Void> registerClient(@RequestBody @Valid @NotNull ClientRegisterDTO dto) {
-        log.info("Request body: {}", dto);
-        return authService.registerClient(dto);
-    }
-
     @PostMapping(value = "/employee/sign-up")
     @Operation(description = "register user")
     ApiResult<Void> registerEmployee(@RequestBody @Valid @NotNull EmployeeRegisterDTO dto) {
@@ -45,15 +38,15 @@ public class AuthController {
     }
 
     @Operation(description = " get sms code")
-    @PostMapping(value = "get/sms_code")
+    @PostMapping(value = "get/sms-code")
     ApiResult<String> getSmsCode(@RequestParam String phoneNumber) {
         log.info("Request body: {}", phoneNumber);
         return authService.getSMSCode(phoneNumber);
     }
 
     @Operation(description = "login with phone number and sms code")
-    @PostMapping(value = "/client/sign-in")
-    ApiResult<TokenDTO> loginClient(@RequestBody @Valid ClientLoginDTO loginDTO) {
+    @PostMapping(value = "/client/signin-or-signup")
+    ApiResult<TokenDTO> loginOrRegisterClient(@RequestBody @Valid ClientLoginDTO loginDTO) {
         log.info("Request body: {}", loginDTO);
         return authService.loginClient(loginDTO);
     }

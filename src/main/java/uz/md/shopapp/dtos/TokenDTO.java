@@ -2,9 +2,6 @@ package uz.md.shopapp.dtos;
 
 import lombok.*;
 
-/**
- * Token DTO
- */
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,15 +11,7 @@ import lombok.*;
 @Builder
 public class TokenDTO {
 
-    /**
-     * that is used to accessing user
-     */
     private String accessToken;
-
-    /**
-     * that is used to refreshing access token
-     */
-    private String refreshToken;
 
     /**
      * token type

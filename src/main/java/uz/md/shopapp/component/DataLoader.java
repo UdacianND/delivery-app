@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import uz.md.shopapp.client.SmsSender;
+import uz.md.shopapp.client.requests.LoginRequest;
 import uz.md.shopapp.domain.*;
 import uz.md.shopapp.domain.enums.PermissionEnum;
 import uz.md.shopapp.repository.*;
@@ -23,12 +24,6 @@ import static uz.md.shopapp.domain.enums.PermissionEnum.*;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(
-        prefix = "simulation",
-        name = "dataloader",
-        havingValue = "true",
-        matchIfMissing = true
-)
 @Slf4j
 @Profile(value = {"test", "dev"})
 public class DataLoader implements CommandLineRunner {
@@ -42,6 +37,7 @@ public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FilesStorageService filesStorageService;
+    private final SmsSender smsSender;
 
     @Value("${app.admin.firstName}")
     private String firstName;
@@ -79,11 +75,22 @@ public class DataLoader implements CommandLineRunner {
     @Value("${app.running}")
     private String activeProfile;
 
+    @Value("${app.sms.sender-email}")
+    private String senderEmail;
+
+    @Value("${app.sms.sender-password}")
+    private String senderPassword;
+
     @Override
     public void run(String... args) {
         filesStorageService.init();
         System.out.println("activeProfile = " + activeProfile);
         if (Objects.equals("create", modeType)) {
+            smsSender.login(LoginRequest
+                    .builder()
+                    .email(senderEmail)
+                    .password(senderPassword)
+                    .build());
             addAdmin();
             saveManagerRole();
             saveClientRole();

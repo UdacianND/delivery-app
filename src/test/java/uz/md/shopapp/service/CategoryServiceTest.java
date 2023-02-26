@@ -4,10 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import uz.md.shopapp.IntegrationTest;
 import uz.md.shopapp.domain.*;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.category.CategoryAddDTO;
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@IntegrationTest
+@SpringBootTest
 @Transactional
 @ActiveProfiles("test")
 public class CategoryServiceTest {

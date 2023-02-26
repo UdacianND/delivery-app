@@ -32,7 +32,7 @@ public class Order extends AbsLongEntity {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(nullable = false)
-    private Address address;
+    private Location location;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderProduct> orderProducts;
@@ -42,6 +42,7 @@ public class Order extends AbsLongEntity {
 
     @Column(nullable = false)
     private Double deliveryPrice;
+
     @Column(nullable = false)
     private Double overallPrice;
 

@@ -19,8 +19,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorData.builder()
-                        .messageUz("Alloqachon mavjud")
-                        .messageRu("")
+                        .messageUz(ex.getMessageUz())
+                        .messageRu(ex.getMessageRu())
                         .userMsg(ex.getMessage())
                         .devMsg(ex.getMessage())
                         .build());
@@ -28,7 +28,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorData> handleMaxSizeException(MaxUploadSizeExceededException exc) {
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ErrorData("File too large!", exc.getMessage()));
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                .body(ErrorData.builder()
+                        .messageUz("Fayl hajmi katta")
+                        .messageRu("")
+                        .build());
     }
 
     @ExceptionHandler({

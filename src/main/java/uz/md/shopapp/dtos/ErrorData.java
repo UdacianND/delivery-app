@@ -17,7 +17,6 @@ public class ErrorData {
     private String messageRu;
     private String devMsg;
     private String userMsg;
-    private Integer errorCode;
 
     public ErrorData(String devMsg, String userMsg) {
         this.devMsg = devMsg;

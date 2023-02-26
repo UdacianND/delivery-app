@@ -9,7 +9,7 @@ import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
 
 public interface AuthService extends UserDetailsService {
 
-    ApiResult<Void> registerClient(ClientRegisterDTO dto);
+    ApiResult<Void> registerClient(ClientLoginDTO dto);
 
     ApiResult<String> getSMSCode(String phoneNumber);
 
