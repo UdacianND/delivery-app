@@ -11,7 +11,6 @@ import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.TokenDTO;
 import uz.md.shopapp.dtos.user.EmployeeRegisterDTO;
 import uz.md.shopapp.dtos.user.ClientLoginDTO;
-import uz.md.shopapp.dtos.user.ClientRegisterDTO;
 import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
 import uz.md.shopapp.service.contract.AuthService;
 import uz.md.shopapp.utils.AppConstants;
@@ -38,8 +37,8 @@ public class AuthController {
     }
 
     @Operation(description = " get sms code")
-    @PostMapping(value = "get/sms-code")
-    ApiResult<String> getSmsCode(@RequestParam String phoneNumber) {
+    @GetMapping(value = "get/sms-code/{phoneNumber}")
+    ApiResult<String> getSmsCode( @PathVariable String phoneNumber) {
         log.info("Request body: {}", phoneNumber);
         return authService.getSMSCode(phoneNumber);
     }
@@ -48,7 +47,7 @@ public class AuthController {
     @PostMapping(value = "/client/signin-or-signup")
     ApiResult<TokenDTO> loginOrRegisterClient(@RequestBody @Valid ClientLoginDTO loginDTO) {
         log.info("Request body: {}", loginDTO);
-        return authService.loginClient(loginDTO);
+        return authService.loginOrRegisterClient(loginDTO);
     }
 
     @Operation(description = "login with phone number and password")

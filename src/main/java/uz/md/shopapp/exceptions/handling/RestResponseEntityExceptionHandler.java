@@ -67,5 +67,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({BadCredentialsException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorData> handleBadCredentialsException(BadCredentialsException exception) {
+        return new ResponseEntity<>(ErrorData
+                .builder()
+                .messageUz(exception.getMessageUz())
+                .messageRu(exception.getMessageRu())
+                .build(),
+                HttpStatus.NOT_FOUND);
+    }
+
 
 }
