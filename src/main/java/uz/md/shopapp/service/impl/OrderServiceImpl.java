@@ -67,36 +67,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ApiResult<OrderDTO> add(OrderAddDTO dto) {
 
-        Order order = new Order();
-        Long userId = dto.getUserId();
+        Order order = orderMapper.fromAddDTO(dto);
+        String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByPhoneNumber(currentUserPhoneNumber)
                 .orElseThrow(() -> NotFoundException.builder()
                         .messageUz("USER_NOT_FOUND")
                         .messageRu("")
                         .build());
-
-        Address address;
-        if (dto.getAddressId() != null) {
-            address = addressRepository
-                    .findByIdAndUserId(dto.getAddressId(), user.getId())
-                    .orElseThrow(() -> NotFoundException.builder()
-                            .messageUz("ADDRESS_NOT_FOUND")
-                            .messageRu("")
-                            .build());
-        } else if (dto.getAddress() != null) {
-            Address adding = addressMapper.fromAddDTO(dto.getAddress());
-            adding.setUser(user);
-            address = addressRepository.save(adding);
-        } else {
-            throw IllegalRequestException.builder()
-                    .messageUz("ADDRESS_MUST_BE_GIVEN_FOR_ORDER")
-                    .messageRu("")
-                    .build();
-        }
-
         order.setUser(user);
-        order.setAddress(address);
         order.setActive(true);
         order.setDeleted(false);
         orderRepository.save(order);

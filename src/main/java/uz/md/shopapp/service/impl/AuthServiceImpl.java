@@ -12,7 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.md.shopapp.client.SmsSender;
+import uz.md.shopapp.client.requests.SendRequest;
 import uz.md.shopapp.config.security.JwtTokenProvider;
+import uz.md.shopapp.controller.AuthController;
 import uz.md.shopapp.domain.Role;
 import uz.md.shopapp.domain.User;
 import uz.md.shopapp.dtos.ApiResult;
@@ -33,6 +36,7 @@ import uz.md.shopapp.service.contract.AuthService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -44,19 +48,22 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final SmsSender smsSender;
 
     public AuthServiceImpl(UserRepository userRepository,
                            @Lazy AuthenticationManager authenticationManager,
                            JwtTokenProvider jwtTokenProvider,
                            UserMapper userMapper,
                            PasswordEncoder passwordEncoder,
-                           RoleRepository roleRepository) {
+                           RoleRepository roleRepository,
+                           SmsSender smsSender) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.smsSender = smsSender;
     }
 
     @Value("${app.role.client.name}")
@@ -72,6 +79,12 @@ public class AuthServiceImpl implements AuthService {
     public ApiResult<TokenDTO> loginClient(ClientLoginDTO dto) {
 
         log.info("Client login method called: " + dto);
+
+        Optional<User> byPhoneNumber = userRepository
+                .findByPhoneNumber(dto.getPhoneNumber());
+        if (byPhoneNumber.isEmpty())
+            registerClient(dto);
+
         User user = authenticate(dto.getPhoneNumber(), dto.getSmsCode());
 
         if (user.getCodeValidTill().isBefore(LocalDateTime.now()))
@@ -82,9 +95,8 @@ public class AuthServiceImpl implements AuthService {
 
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
         String accessToken = jwtTokenProvider.generateAccessToken(user, Timestamp.valueOf(tokenIssuedAt));
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
-        TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
+        TokenDTO tokenDTO = new TokenDTO(accessToken);
 
         return ApiResult.successResponse(
                 tokenDTO);
@@ -100,9 +112,8 @@ public class AuthServiceImpl implements AuthService {
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
         String accessToken = jwtTokenProvider.generateAccessToken(user,
                 Timestamp.valueOf(tokenIssuedAt));
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
-        TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
+        TokenDTO tokenDTO = new TokenDTO(accessToken);
 
         return ApiResult
                 .successResponse(tokenDTO);
@@ -164,17 +175,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResult<Void> registerClient(ClientRegisterDTO dto) {
+    public ApiResult<Void> registerClient(ClientLoginDTO register) {
 
-        log.info("User registration with " + dto);
+        log.info("User registration with " + register);
 
-        if (userRepository.existsByPhoneNumber(dto.getPhoneNumber()))
+        if (userRepository.existsByPhoneNumber(register.getPhoneNumber()))
             throw ConflictException.builder()
                     .messageUz("Telefon raqam allaqachon mavjud")
                     .messageRu("")
                     .build();
 
-        User user = userMapper.fromClientAddDTO(dto);
+        User user = new User();
+        user.setPhoneNumber(register.getPhoneNumber());
         Role role = roleRepository
                 .findByName(clientRoleName)
                 .orElseThrow(() -> NotFoundException
@@ -201,9 +213,15 @@ public class AuthServiceImpl implements AuthService {
         String smsCode = RandomStringUtils.random(4, false, true);
         user.setPassword(passwordEncoder.encode(smsCode));
         user.setCodeValidTill(LocalDateTime.now().plus(smsValidTill, ChronoUnit.valueOf(smsValidTillIn)));
-        // TODO: 2/15/2023 Sms service send sms to client
+
+        SendRequest sendRequest =
+                new SendRequest(
+                        user.getPhoneNumber().substring(1),
+                        "" + smsCode + "-code:birzumda.uz",
+                        4546,
+                        "http://localhost:8090/" + AuthController.BASE_URL + "/client/login");
+//        smsSender.sendSms(sendRequest);
         userRepository.save(user);
-        System.out.println("********************** smsCode = " + smsCode);
         return ApiResult.successResponse("SMS kod jo'natildi");
     }
 
@@ -212,7 +230,7 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByPhoneNumber(username)
                 .orElseThrow(() -> NotFoundException
                         .builder()
-                        .messageUz("Ushbu nomli :u Foydalanuvchi topilmadi ".replaceFirst(":u",username))
+                        .messageUz("Ushbu nomli :u Foydalanuvchi topilmadi ".replaceFirst(":u", username))
                         .messageRu("")
                         .build());
     }
