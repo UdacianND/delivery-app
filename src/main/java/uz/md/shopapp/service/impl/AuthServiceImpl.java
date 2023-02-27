@@ -199,7 +199,7 @@ public class AuthServiceImpl implements AuthService {
                         .messageUz("Standart role topilmadi")
                         .messageRu("")
                         .build());
-        user.setActive(false);
+        user.setActive(true);
         user.setRole(role);
         userRepository.save(user);
         return ApiResult.successResponse();

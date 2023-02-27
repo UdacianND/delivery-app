@@ -18,7 +18,7 @@ import uz.md.shopapp.utils.AppConstants;
 import java.util.List;
 
 @RestController
-@RequestMapping(InstitutionTypeController.BASE_URL + "/")
+@RequestMapping(InstitutionTypeController.BASE_URL)
 @RequiredArgsConstructor
 @Tag(name = "InstitutionType", description = "Endpoints for InstitutionType")
 @Slf4j

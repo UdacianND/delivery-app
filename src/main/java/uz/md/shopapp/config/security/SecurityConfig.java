@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import uz.md.shopapp.controller.InstitutionTypeController;
 import uz.md.shopapp.utils.AppConstants;
 
 @Configuration
@@ -37,6 +39,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(InstitutionTypeController.BASE_URL+"/**").permitAll()
                         .requestMatchers(AppConstants.OPEN_PAGES).permitAll()
                         .requestMatchers(AppConstants.SWAGGER_PAGES).permitAll()
                         .anyRequest().authenticated())
