@@ -30,14 +30,12 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/category/{id}")
-    @Operation(description = "Get products by category")
     public ApiResult<List<ProductDTO>> getAllByCategory(@PathVariable Long id) {
         log.info("getAllByCategory called with category id {}", id);
         return productService.getAllByCategory(id);
     }
 
     @GetMapping("/{id}")
-    @Operation(description = "Get product by id")
     public ApiResult<ProductDTO> getById(@PathVariable Long id) {
         log.info("getById called with id {}", id);
         return productService.findById(id);
@@ -69,7 +67,6 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    @Operation(description = "Searching products")
     public ApiResult<List<ProductDTO>> getProductsBySimpleSearch(@RequestBody SimpleSearchRequest request) {
         log.info("get products by simple search request");
         log.info("Request body {}", request);
@@ -77,7 +74,6 @@ public class ProductController {
     }
 
     @GetMapping("/sorting")
-    @Operation(description = "List of products sorted")
     public ApiResult<List<ProductDTO>> getProductsBySort(@RequestBody SimpleSortRequest request) {
         log.info("getProductsBySort");
         log.info("Request body is: {}", request);

@@ -30,7 +30,6 @@ public class CategoryController {
 
     @GetMapping
     @Operation(description = "Get all categories")
-    @CheckAuth(permission = PermissionEnum.GET_CATEGORY)
     public ApiResult<List<CategoryDTO>> getAll() {
         log.info("Getting all categories");
         return categoryService.getAll();
@@ -38,7 +37,6 @@ public class CategoryController {
 
     @GetMapping("/all")
     @Operation(description = "Get all categories")
-    @CheckAuth(permission = {PermissionEnum.GET_CATEGORY, PermissionEnum.GET_PRODUCT})
     public ApiResult<List<CategoryInfoDTO>> getAllForInfo() {
         log.info("getting all categories");
         return categoryService.getAllForInfo();
@@ -46,7 +44,6 @@ public class CategoryController {
 
     @GetMapping("/institution/{id}")
     @Operation(description = "Get all categories by institution")
-    @CheckAuth(permission = PermissionEnum.GET_CATEGORY)
     public ApiResult<List<CategoryInfoDTO>> getAllByInstitution(@PathVariable Long id) {
         log.info("getting all categories by institution");
         return categoryService.getAllByInstitutionId(id);
@@ -54,7 +51,6 @@ public class CategoryController {
 
     @GetMapping("/institution/{id}/by-page/{page}")
     @Operation(description = "Get all categories by institution and page")
-    @CheckAuth(permission = PermissionEnum.GET_CATEGORY)
     public ApiResult<List<CategoryInfoDTO>> getAllByInstitutionAndPage(@PathVariable Long id, @PathVariable String page) {
         log.info("getting all categories by institution");
         return categoryService.getAllByInstitutionIdAndPage(id,page);
@@ -63,7 +59,6 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     @Operation(description = "Get a category by id")
-    @CheckAuth(permission = PermissionEnum.GET_CATEGORY)
     public ApiResult<CategoryDTO> getById(@PathVariable Long id) {
         log.info("Getting category by id: {}", id);
         return categoryService.findById(id);
