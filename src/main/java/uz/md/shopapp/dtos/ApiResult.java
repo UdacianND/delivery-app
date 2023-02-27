@@ -13,9 +13,7 @@ import java.io.Serializable;
 public class ApiResult<T> implements Serializable {
 
     private boolean success;
-
     private T data;
-
     private ErrorData errors;
     private Integer statusCode;
 

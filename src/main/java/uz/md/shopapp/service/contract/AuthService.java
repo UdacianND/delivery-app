@@ -12,7 +12,7 @@ public interface AuthService extends UserDetailsService {
 
     ApiResult<String> getSMSCode(String phoneNumber);
 
-    ApiResult<TokenDTO> loginOrRegisterClient(ClientLoginDTO loginDTO);
+    ApiResult<TokenDTO> loginClient(ClientLoginDTO loginDTO);
 
     ApiResult<TokenDTO> loginEmployee(EmployeeLoginDTO loginDTO);
 

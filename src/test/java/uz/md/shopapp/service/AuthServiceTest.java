@@ -11,19 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.md.shopapp.domain.Role;
 import uz.md.shopapp.domain.User;
 import uz.md.shopapp.domain.enums.PermissionEnum;
-import uz.md.shopapp.dtos.ApiResult;
-import uz.md.shopapp.dtos.TokenDTO;
 import uz.md.shopapp.dtos.user.ClientLoginDTO;
-import uz.md.shopapp.dtos.user.ClientRegisterDTO;
-import uz.md.shopapp.exceptions.ConflictException;
 import uz.md.shopapp.exceptions.NotAllowedException;
-import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.repository.RoleRepository;
 import uz.md.shopapp.repository.UserRepository;
 import uz.md.shopapp.service.contract.AuthService;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -131,7 +125,7 @@ public class AuthServiceTest {
         user.setDeleted(true);
         userRepository.saveAndFlush(user);
         ClientLoginDTO clientLoginDTO = new ClientLoginDTO(user.getPhoneNumber(), "1221");
-        assertThrows(BadCredentialsException.class, () -> authService.loginOrRegisterClient(clientLoginDTO));
+        assertThrows(BadCredentialsException.class, () -> authService.loginClient(clientLoginDTO));
     }
 
     @Test
@@ -141,7 +135,7 @@ public class AuthServiceTest {
         user.setCodeValidTill(LocalDateTime.now().plusMinutes(5));
         userRepository.saveAndFlush(user);
         ClientLoginDTO clientLogin = new ClientLoginDTO(DEFAULT_PHONE_NUMBER, "5555");
-        assertThrows(BadCredentialsException.class, () -> authService.loginOrRegisterClient(clientLogin));
+        assertThrows(BadCredentialsException.class, () -> authService.loginClient(clientLogin));
     }
 
     @Test
@@ -151,7 +145,7 @@ public class AuthServiceTest {
         user.setCodeValidTill(LocalDateTime.now().minusMinutes(15));
         userRepository.saveAndFlush(user);
         ClientLoginDTO clientLogin = new ClientLoginDTO(user.getPhoneNumber(), "1212");
-        assertThrows(NotAllowedException.class, () -> authService.loginOrRegisterClient(clientLogin));
+        assertThrows(NotAllowedException.class, () -> authService.loginClient(clientLogin));
     }
 
 }

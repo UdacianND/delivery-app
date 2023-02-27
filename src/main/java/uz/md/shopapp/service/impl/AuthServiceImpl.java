@@ -74,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
     private String smsValidTillIn;
 
     @Override
-    public ApiResult<TokenDTO> loginOrRegisterClient(ClientLoginDTO dto) {
+    public ApiResult<TokenDTO> loginClient(ClientLoginDTO dto) {
 
         log.info("Client login method called: " + dto);
 
@@ -85,7 +85,6 @@ public class AuthServiceImpl implements AuthService {
                     .messageUz("Bunday foydalanuvchi topilmadi")
                     .messageRu("ru")
                     .build();
-
 
         if (user.getCodeValidTill().isBefore(LocalDateTime.now()))
             throw NotAllowedException.builder()
@@ -227,7 +226,7 @@ public class AuthServiceImpl implements AuthService {
                     .messageRu("")
                     .build();
 
-        String smsCode = RandomStringUtils.random(4, false, true);
+        String smsCode = RandomStringUtils.random(5, false, true);
 
         System.out.println("=========== smsCode  " + smsCode + " =============== ");
 
