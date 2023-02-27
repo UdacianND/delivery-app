@@ -80,7 +80,6 @@ public class AuthServiceImpl implements AuthService {
 
         User user = authenticate(dto.getPhoneNumber(), dto.getSmsCode());
 
-
         if (!user.getRole().getName().equals("CLIENT"))
             throw NotFoundException.builder()
                     .messageUz("Bunday foydalanuvchi topilmadi")
@@ -221,6 +220,12 @@ public class AuthServiceImpl implements AuthService {
                         .messageUz(" Ushbu Telefon raqamdagi Foydalanuvchi topilmadi ")
                         .messageRu("")
                         .build());
+
+        if (!user.getRole().getName().equals("CLIENT"))
+            throw NotFoundException.builder()
+                    .messageUz(" Foydalananuvchi topilmadi ")
+                    .messageRu("")
+                    .build();
 
         String smsCode = RandomStringUtils.random(4, false, true);
 
