@@ -74,19 +74,17 @@ public class AuthServiceImpl implements AuthService {
     private String smsValidTillIn;
 
     @Override
-    public ApiResult<TokenDTO> loginOrRegisterClient(ClientLoginDTO dto) {
+    public ApiResult<TokenDTO> loginClient(ClientLoginDTO dto) {
 
         log.info("Client login method called: " + dto);
 
         User user = authenticate(dto.getPhoneNumber(), dto.getSmsCode());
-
 
         if (!user.getRole().getName().equals("CLIENT"))
             throw NotFoundException.builder()
                     .messageUz("Bunday foydalanuvchi topilmadi")
                     .messageRu("ru")
                     .build();
-
 
         if (user.getCodeValidTill().isBefore(LocalDateTime.now()))
             throw NotAllowedException.builder()
@@ -201,7 +199,7 @@ public class AuthServiceImpl implements AuthService {
                         .messageUz("Standart role topilmadi")
                         .messageRu("")
                         .build());
-        user.setActive(false);
+        user.setActive(true);
         user.setRole(role);
         userRepository.save(user);
         return ApiResult.successResponse();
@@ -222,7 +220,13 @@ public class AuthServiceImpl implements AuthService {
                         .messageRu("")
                         .build());
 
-        String smsCode = RandomStringUtils.random(4, false, true);
+        if (!user.getRole().getName().equals("CLIENT"))
+            throw NotFoundException.builder()
+                    .messageUz(" Foydalananuvchi topilmadi ")
+                    .messageRu("")
+                    .build();
+
+        String smsCode = RandomStringUtils.random(5, false, true);
 
         System.out.println("=========== smsCode  " + smsCode + " =============== ");
 

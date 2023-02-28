@@ -37,17 +37,17 @@ public class AuthController {
     }
 
     @Operation(description = " get sms code")
-    @GetMapping(value = "get/sms-code/{phoneNumber}")
-    ApiResult<String> getSmsCode( @PathVariable String phoneNumber) {
+    @PostMapping(value = "get/sms-code")
+    ApiResult<String> getSmsCode( @RequestParam String phoneNumber) {
         log.info("Request body: {}", phoneNumber);
         return authService.getSMSCode(phoneNumber);
     }
 
     @Operation(description = "login with phone number and sms code")
     @PostMapping(value = "/client/signin-or-signup")
-    ApiResult<TokenDTO> loginOrRegisterClient(@RequestBody @Valid ClientLoginDTO loginDTO) {
+    ApiResult<TokenDTO> loginClient(@RequestBody @Valid ClientLoginDTO loginDTO) {
         log.info("Request body: {}", loginDTO);
-        return authService.loginOrRegisterClient(loginDTO);
+        return authService.loginClient(loginDTO);
     }
 
     @Operation(description = "login with phone number and password")

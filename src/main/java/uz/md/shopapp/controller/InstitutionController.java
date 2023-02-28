@@ -31,7 +31,6 @@ public class InstitutionController {
 
     @GetMapping
     @Operation(description = "Get all institutions")
-    @CheckAuth(permission = PermissionEnum.GET_INSTITUTION)
     public ApiResult<List<InstitutionDTO>> getAll() {
         log.info("Getting all institutions");
         return institutionService.getAll();
@@ -39,7 +38,6 @@ public class InstitutionController {
 
     @GetMapping("/all")
     @Operation(description = "Get all institutions")
-    @CheckAuth(permission = PermissionEnum.GET_INSTITUTION)
     public ApiResult<List<InstitutionInfoDTO>> getAllForInfo() {
         log.info("getting all institutions");
         return institutionService.getAllForInfo();
@@ -47,7 +45,6 @@ public class InstitutionController {
 
     @GetMapping("/by-page/{page}")
     @Operation(description = "Get all institutions by pagination")
-    @CheckAuth(permission = PermissionEnum.GET_INSTITUTION)
     public ApiResult<List<InstitutionInfoDTO>> getAllForInfoByPage(@PathVariable String page) {
         log.info("getting all institutions");
         return institutionService.getAllForInfoByPage(page);
@@ -55,7 +52,6 @@ public class InstitutionController {
 
     @GetMapping("/all/by_type/{id}")
     @Operation(description = "Get all institutions by type")
-    @CheckAuth(permission = PermissionEnum.GET_INSTITUTION)
     public ApiResult<List<InstitutionInfoDTO>> getAllByType(@PathVariable("id") Long typeId) {
         log.info("getting all institutions by type");
         return institutionService.getAllByTypeId(typeId);
@@ -71,7 +67,6 @@ public class InstitutionController {
 
     @GetMapping("/{id}")
     @Operation(description = "Get a institution by id")
-    @CheckAuth(permission = PermissionEnum.GET_INSTITUTION)
     public ApiResult<InstitutionDTO> getById(@PathVariable Long id) {
         log.info("Getting institution by id: {}", id);
         return institutionService.findById(id);
