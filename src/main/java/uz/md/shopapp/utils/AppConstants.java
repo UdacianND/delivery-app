@@ -23,6 +23,7 @@ public interface AppConstants {
             InstitutionController.BASE_URL+"/by-page/*",
             InstitutionController.BASE_URL+"/*",
             InstitutionController.BASE_URL+"/by-type/*",
+            InstitutionController.BASE_URL+"/all/by-type/*",
             ProductController.BASE_URL+"/category/*",
             CategoryController.BASE_URL,
             CategoryController.BASE_URL+"/all",
