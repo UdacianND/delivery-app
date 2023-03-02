@@ -34,8 +34,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderProductMapper orderProductMapper;
     private final QueryService queryService;
     private final UserRepository userRepository;
-    private final AddressMapper addressMapper;
-    private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
 
@@ -56,7 +54,6 @@ public class OrderServiceImpl implements OrderService {
                 });
     }
 
-
     @Override
     public ApiResult<OrderDTO> findById(Long id) {
         return ApiResult.successResponse(
@@ -70,7 +67,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.fromAddDTO(dto);
         String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
 
-        User user = userRepository.findByPhoneNumber(currentUserPhoneNumber)
+        User user = userRepository
+                .findByPhoneNumber(currentUserPhoneNumber)
                 .orElseThrow(() -> NotFoundException.builder()
                         .messageUz("USER_NOT_FOUND")
                         .messageRu("")
@@ -80,6 +78,7 @@ public class OrderServiceImpl implements OrderService {
         order.setDeleted(false);
         orderRepository.save(order);
         List<OrderProduct> orderProducts = new ArrayList<>();
+
         for (OrderProductAddDTO addDTO : dto.getOrderProducts()) {
             OrderProduct orderProduct = orderProductMapper.fromAddDTO(addDTO);
             orderProduct.setOrder(order);
@@ -94,6 +93,7 @@ public class OrderServiceImpl implements OrderService {
             orderProductRepository.save(orderProduct);
             orderProducts.add(orderProduct);
         }
+
         double overallPrice = sumOrderOverallPrice(orderProducts);
         order.setOverallPrice(overallPrice);
         order.setOrderProducts(orderProducts);

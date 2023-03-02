@@ -1,17 +1,22 @@
 package uz.md.shopapp.job;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uz.md.shopapp.client.SmsSender;
 import uz.md.shopapp.client.requests.LoginRequest;
 
 @Component
 @RequiredArgsConstructor
-public class MyJob implements Job {
+@Slf4j
+@EnableScheduling
+public class MyJob {
 
   @Value("${app.sms.sender-email}")
   private String senderEmail;
@@ -21,9 +26,9 @@ public class MyJob implements Job {
 
   private final SmsSender smsSender;
 
-  @Override
-  public void execute(JobExecutionContext context) {
-    System.out.println("context.getJobDetail() = " + context.getJobDetail());
+  @Scheduled(fixedDelay = 30 * 24 * 60 * 60 * 1000)
+  public void execute() {
+    log.info("login to sms sender service ");
     smsSender.login(LoginRequest
             .builder()
             .email(senderEmail)
