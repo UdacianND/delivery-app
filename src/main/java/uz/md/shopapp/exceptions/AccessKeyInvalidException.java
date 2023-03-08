@@ -1,8 +1,10 @@
 package uz.md.shopapp.exceptions;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class AccessKeyInvalidException extends RuntimeException {
 
     private String messageUz;

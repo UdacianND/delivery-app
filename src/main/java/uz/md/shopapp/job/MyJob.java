@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import uz.md.shopapp.client.SmsSender;
 import uz.md.shopapp.client.requests.LoginRequest;
 
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -26,7 +29,7 @@ public class MyJob {
 
   private final SmsSender smsSender;
 
-  @Scheduled(fixedDelay = 30 * 24 * 60 * 60 * 1000)
+  @Scheduled(fixedDelay = 20, timeUnit = TimeUnit.DAYS)
   public void execute() {
     log.info("login to sms sender service ");
     smsSender.login(LoginRequest

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,10 +24,7 @@ import uz.md.shopapp.dtos.TokenDTO;
 import uz.md.shopapp.dtos.user.ClientLoginDTO;
 import uz.md.shopapp.dtos.user.EmployeeLoginDTO;
 import uz.md.shopapp.dtos.user.EmployeeRegisterDTO;
-import uz.md.shopapp.exceptions.ConflictException;
-import uz.md.shopapp.exceptions.NotAllowedException;
-import uz.md.shopapp.exceptions.NotEnabledException;
-import uz.md.shopapp.exceptions.NotFoundException;
+import uz.md.shopapp.exceptions.*;
 import uz.md.shopapp.mapper.UserMapper;
 import uz.md.shopapp.repository.RoleRepository;
 import uz.md.shopapp.repository.UserRepository;
@@ -76,9 +74,22 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResult<TokenDTO> loginClient(ClientLoginDTO dto) {
 
+        if (dto == null || dto.getPhoneNumber() == null || dto.getSmsCode() == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xato bor")
+                    .messageRu("")
+                    .build();
+
         log.info("Client login method called: " + dto);
 
         User user = authenticate(dto.getPhoneNumber(), dto.getSmsCode());
+
+        if (user == null || user.getRole() == null){
+            throw NotFoundException.builder()
+                    .messageUz("Foydalanuvchi topilmadi")
+                    .messageRu("")
+                    .build();
+        }
 
         if (!user.getRole().getName().equals("CLIENT"))
             throw NotFoundException.builder()
@@ -93,7 +104,8 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
-        String accessToken = jwtTokenProvider.generateAccessToken(user, Timestamp.valueOf(tokenIssuedAt));
+        String accessToken = jwtTokenProvider
+                .generateAccessToken(user, Timestamp.valueOf(tokenIssuedAt));
 
         TokenDTO tokenDTO = new TokenDTO(accessToken);
 
@@ -104,11 +116,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResult<TokenDTO> loginEmployee(EmployeeLoginDTO dto) {
 
+        if (dto == null || dto.getPhoneNumber() == null || dto.getPassword() == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xato bor")
+                    .messageRu("")
+                    .build();
+
         log.info("Employee login method called: " + dto);
 
         User user = authenticate(dto.getPhoneNumber(), dto.getPassword());
 
-        if (!user.getRole().getName().equals("MANAGER"))
+        if (user==null || user.getRole() == null || !user.getRole().getName().equals("MANAGER"))
             throw NotFoundException.builder()
                     .messageUz("Bunday ishchi topilmadi")
                     .messageRu("Bunday ishchi topilmadi ru")
@@ -117,6 +135,12 @@ public class AuthServiceImpl implements AuthService {
         LocalDateTime tokenIssuedAt = LocalDateTime.now();
         String accessToken = jwtTokenProvider.generateAccessToken(user,
                 Timestamp.valueOf(tokenIssuedAt));
+
+        if (accessToken == null)
+            throw IllegalRequestException.builder()
+                    .messageUz("Token yaratishda xatolik yuz berdi")
+                    .messageRu("")
+                    .build();
 
         TokenDTO tokenDTO = new TokenDTO(accessToken);
 
@@ -127,7 +151,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ApiResult<Void> registerEmployee(EmployeeRegisterDTO dto) {
+
         log.info("Employee registration with " + dto);
+
+        if (dto == null || dto.getPhoneNumber() == null
+                || dto.getRoleId() == null) {
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xato bor")
+                    .messageRu("")
+                    .build();
+        }
 
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber()))
             throw ConflictException.builder()
@@ -145,6 +178,7 @@ public class AuthServiceImpl implements AuthService {
                         .messageRu("")
                         .build()
                 );
+
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setActive(true);
         user.setRole(role);
@@ -153,6 +187,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private User authenticate(String phoneNumber, String password) {
+
+        if (phoneNumber == null || password == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xato bor")
+                    .messageRu("")
+                    .build();
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -184,6 +225,13 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("User registration with " + phoneNumber);
 
+        if (phoneNumber == null) {
+            throw BadRequestException.builder()
+                    .messageUz("Telefon raqam bo' bo'lishi mumkin emas")
+                    .messageRu("")
+                    .build();
+        }
+
         if (userRepository.existsByPhoneNumber(phoneNumber))
             throw ConflictException.builder()
                     .messageUz("Telefon raqam allaqachon mavjud")
@@ -209,6 +257,12 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public ApiResult<String> getSMSCode(String phoneNumber) {
 
+        if (phoneNumber == null)
+            throw BadRequestException.builder()
+                    .messageUz("Telefon raqam bo'sh bo'lishi mumkin emas")
+                    .messageRu("")
+                    .build();
+
         if (!userRepository
                 .existsByPhoneNumber(phoneNumber))
             registerClient(phoneNumber);
@@ -216,7 +270,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> NotFoundException
                         .builder()
-                        .messageUz(" Ushbu Telefon raqamdagi Foydalanuvchi topilmadi ")
+                        .messageUz(" Ushbu Telefon raqamdagi foydalanuvchi topilmadi ")
                         .messageRu("")
                         .build());
 

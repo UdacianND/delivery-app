@@ -35,36 +35,43 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                         .build());
     }
 
-    @ExceptionHandler({
-            AccessKeyInvalidException.class,
-            InvalidUserNameOrPasswordException.class,
-            NotAllowedException.class,
-            NotEnabledException.class})
+    @ExceptionHandler(AccessKeyInvalidException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<ErrorData> handleAllException(Exception ex) {
-        return new ResponseEntity<>(new ErrorData(ex.getMessage(), ex.getMessage()),
+    public ResponseEntity<ErrorData> handleAllException(AccessKeyInvalidException ex) {
+        return new ResponseEntity<>(ErrorData.builder()
+                .messageUz(ex.getMessageUz())
+                .messageRu(ex.getMessageRu())
+                .build(),
                 HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({IllegalRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorData> handleIllegalRequest(Exception exception) {
-        return new ResponseEntity<>(new ErrorData(exception.getMessage(), exception.getMessage()),
+    public ResponseEntity<ErrorData> handleIllegalRequest(IllegalRequestException exception) {
+        return new ResponseEntity<>(ErrorData.builder()
+                .messageUz(exception.getMessageUz())
+                .messageRu(exception.getMessageRu())
+                .build(),
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ConflictException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<ErrorData> handleConflictException(Exception exception) {
-        return new ResponseEntity<>(new ErrorData(exception.getMessage(), exception.getMessage()),
+    public ResponseEntity<ErrorData> handleConflictException(ConflictException exception) {
+        return new ResponseEntity<>(ErrorData.builder()
+                .messageUz(exception.getMessageUz())
+                .messageRu(exception.getMessageRu())
+                .build(),
                 HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler({NotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorData> handleNotFoundException(Exception exception) {
-        return new ResponseEntity<>(new ErrorData(exception.getMessage(), exception.getMessage()),
-                HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorData> handleNotFoundException(NotFoundException exception) {
+        return new ResponseEntity<>(ErrorData.builder()
+                .messageUz(exception.getMessageUz())
+                .messageRu(exception.getMessageRu())
+                .build(),
+                HttpStatus.valueOf(508));
     }
 
     @ExceptionHandler({BadCredentialsException.class})
