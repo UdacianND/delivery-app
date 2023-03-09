@@ -79,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
                 orderedProducts,
                 42000D);
         telegrambotService.sendOrderToGroup(orderDto);
+
 //        Order order = orderMapper.fromAddDTO(dto);
 //        String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
 //
