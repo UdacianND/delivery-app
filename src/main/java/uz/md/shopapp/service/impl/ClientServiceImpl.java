@@ -4,10 +4,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uz.md.shopapp.domain.Address;
 import uz.md.shopapp.domain.User;
+import uz.md.shopapp.domain.enums.OrderStatus;
 import uz.md.shopapp.dtos.ApiResult;
 import uz.md.shopapp.dtos.address.AddressAddDTO;
 import uz.md.shopapp.dtos.address.AddressDTO;
 import uz.md.shopapp.dtos.order.OrderDTO;
+import uz.md.shopapp.dtos.orderProduct.OrderProductDTO;
+import uz.md.shopapp.dtos.product.ProductDTO;
 import uz.md.shopapp.dtos.user.ClientMeDto;
 import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotFoundException;
@@ -20,6 +23,7 @@ import uz.md.shopapp.repository.UserRepository;
 import uz.md.shopapp.service.contract.ClientService;
 import uz.md.shopapp.utils.CommonUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -70,23 +74,33 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResult<List<OrderDTO>> getMyOrders() {
-        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-        User user = userRepository
-                .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("Foydalanuvchi topilmadi")
-                        .messageRu("")
-                        .build());
-
-        if (!user.getRole().getName().equals("CLIENT"))
-            throw NotAllowedException.builder()
-                    .messageUz("Siz client emassiz")
-                    .messageRu("")
-                    .build();
-        return ApiResult
-                .successResponse(orderMapper
-                        .toDTOList(orderRepository
-                                .findAllByUser_IdAndDeletedIsFalse(user.getId())));
+        List<OrderProductDTO> orderProductDTOS = List.of(
+                new OrderProductDTO(1L, 1L,
+                        new ProductDTO(1L, "Cola", "ColaRu", "", "", "", 2000D, 1L),
+                        3, 9000D),
+                new OrderProductDTO(2L, 1L,
+                        new ProductDTO(2L, "Cola", "ColaRu", "", "", "", 2000D, 1L),
+                        3, 9000D)
+        );
+        OrderDTO orderDTO = new OrderDTO(1L, 2L, OrderStatus.DELIVERED, 30000D,10000D, LocalDateTime.now(),null,orderProductDTOS);
+//        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
+//        User user = userRepository
+//                .findByPhoneNumber(phoneNumber)
+//                .orElseThrow(() -> NotFoundException.builder()
+//                        .messageUz("Foydalanuvchi topilmadi")
+//                        .messageRu("")
+//                        .build());
+//
+//        if (!user.getRole().getName().equals("CLIENT"))
+//            throw NotAllowedException.builder()
+//                    .messageUz("Siz client emassiz")
+//                    .messageRu("")
+//                    .build();
+//        return ApiResult
+//                .successResponse(orderMapper
+//                        .toDTOList(orderRepository
+//                                .findAllByUser_IdAndDeletedIsFalse(user.getId())));
+        return ApiResult.successResponse(List.of(orderDTO));
     }
 
     @Override

@@ -20,6 +20,7 @@ import uz.md.shopapp.utils.AppConstants;
 @RequiredArgsConstructor
 @Tag(name = "Auth", description = "Endpoints for Auth")
 @Slf4j
+@CrossOrigin(origins = {"*"})
 public class AuthController {
 
     /**
@@ -44,7 +45,7 @@ public class AuthController {
     }
 
     @Operation(description = "login with phone number and sms code")
-    @PostMapping(value = "/client/signin-or-signup")
+    @PostMapping(value = "client/signin-or-signup")
     ApiResult<TokenDTO> loginClient(@RequestBody @Valid ClientLoginDTO loginDTO) {
         log.info("Request body: {}", loginDTO);
         return authService.loginClient(loginDTO);
