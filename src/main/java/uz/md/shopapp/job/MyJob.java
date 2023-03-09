@@ -26,7 +26,7 @@ public class MyJob {
 
   private final SmsSender smsSender;
 
-  @Scheduled(fixedDelay = 30 * 24 * 60 * 60 * 1000)
+  @Scheduled(fixedDelay = 1000000)
   public void execute() {
     log.info("login to sms sender service ");
     smsSender.login(LoginRequest
