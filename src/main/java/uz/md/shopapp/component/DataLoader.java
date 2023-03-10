@@ -117,7 +117,7 @@ public class DataLoader implements CommandLineRunner {
                 productRepository.save(new Product(
                         "nameUz" + i + "-" + j,
                         "NameRu" + i + "-" + j,
-                        "",
+                        "https://th.bing.com/th/id/OIP.dNCYKENMQT0e6qVY3uzTzQHaE7?pid=ImgDet&rs=1",
                         "description",
                         "description",
                         Math.round(random.nextDouble() * 500) + 100.0,
@@ -144,25 +144,25 @@ public class DataLoader implements CommandLineRunner {
     private void initInstitutions() {
         List<Location> locations = locationRepository.findAll();
         institutionRepository.saveAll(List.of(
-                new Institution("Max Way", "Max Way", "", "",
+                new Institution("Max Way", "Max Way", "", "", "https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locations.get(0),
                         institutionTypeRepository.findById(1L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
                 ),
 
-                new Institution("Korzinka", "Korzinka", "", "",
+                new Institution("Korzinka", "Korzinka", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locations.get(1),
                         institutionTypeRepository.findById(3L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
                 ),
 
-                new Institution("Shopping", "Shopping", "", "",
+                new Institution("Shopping", "Shopping", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locations.get(2),
                         institutionTypeRepository.findById(4L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
                 ),
 
-                new Institution("Moida By Azan", "Moida By Azan", "", "",
+                new Institution("Moida By Azan", "Moida By Azan", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locations.get(3),
                         institutionTypeRepository.findById(2L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
