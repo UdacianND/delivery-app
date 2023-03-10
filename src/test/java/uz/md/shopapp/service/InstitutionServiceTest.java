@@ -266,6 +266,7 @@ public class InstitutionServiceTest {
                 "another",
                 "desc",
                 "desc",
+                "",
                 locationRepository
                         .saveAndFlush(new Location(15.0, 15.0)),
                 anotherType,
@@ -297,6 +298,7 @@ public class InstitutionServiceTest {
                 "another",
                 "desc",
                 "desc",
+                "",
                 locationRepository
                         .saveAndFlush(new Location(15.0, 15.0)),
                 institutionType,
