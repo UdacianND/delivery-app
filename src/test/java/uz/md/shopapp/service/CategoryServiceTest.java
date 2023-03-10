@@ -316,6 +316,7 @@ public class CategoryServiceTest {
                         "another",
                         "",
                         "",
+                        "",
                         new Location(12.0, 12.0),
                         institutionType,
                         manager));
@@ -346,6 +347,7 @@ public class CategoryServiceTest {
                 .saveAndFlush(new Institution(
                         "another",
                         "another",
+                        "",
                         "",
                         "",
                         locationRepository
@@ -380,6 +382,7 @@ public class CategoryServiceTest {
                 .saveAndFlush(new Institution(
                         "another",
                         "another",
+                        "",
                         "",
                         "",
                         locationRepository

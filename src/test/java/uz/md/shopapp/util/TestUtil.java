@@ -122,6 +122,7 @@ public final class TestUtil {
                     "nameRu" + (i + 1),
                     "description",
                     "description",
+                    "",
                     Location.builder()
                             .latitude(15.0)
                             .longitude(15.0)
