@@ -27,7 +27,7 @@ public class Institution extends AbsLongEntity {
     private String descriptionRu;
     private String imageUrl;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(nullable = false)
     private Location location;
 
@@ -36,6 +36,7 @@ public class Institution extends AbsLongEntity {
     private InstitutionType type;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution")
+    @ToString.Exclude
     private List<Category> categories;
 
     @OneToOne

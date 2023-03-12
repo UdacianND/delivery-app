@@ -12,8 +12,7 @@ public class OrderProductAddToBotDTO {
     @NotNull(message = "ordered product name can not be null ")
     private String name;
     @NotNull(message = "ordered product count can not be null ")
-    private int count;
-
+    private int quantity;
     @NotNull(message = "ordered product price can not be null ")
     private double price;
     @NotNull(message = "ordered product institution name can not be null ")

@@ -6,6 +6,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import uz.md.shopapp.client.repo.SmsTokenRepository;
 import uz.md.shopapp.client.requests.*;
+import uz.md.shopapp.exceptions.BadRequestException;
+import uz.md.shopapp.exceptions.NotFoundException;
+
+import java.util.List;
 
 @Service
 public class SmsSenderImpl implements SmsSender {
@@ -33,7 +37,13 @@ public class SmsSenderImpl implements SmsSender {
                         HttpEntity.EMPTY,
                         TokenResult.class);
         TokenResult body = exchange.getBody();
-        assert body != null;
+
+        if (body == null)
+            throw BadRequestException.builder()
+                    .messageUz("Nimadir xato")
+                    .messageRu("")
+                    .build();
+
         smsTokenRepository.save(body.getData());
         return exchange;
     }
@@ -41,8 +51,15 @@ public class SmsSenderImpl implements SmsSender {
     @Override
     public ResponseEntity<SMSUser> getUser() {
 
-        SmsToken smsToken = smsTokenRepository.findAll().get(0);
+        List<SmsToken> all = smsTokenRepository.findAll();
 
+        if (all.size() == 0)
+            throw NotFoundException.builder()
+                    .messageUz("SMS tokenlar topilmadi")
+                    .messageRu("")
+                    .build();
+
+        SmsToken smsToken = all.get(0);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + smsToken.getToken());
@@ -58,6 +75,7 @@ public class SmsSenderImpl implements SmsSender {
 
     @Override
     public ResponseEntity<SMSResult> sendSms(SendRequest sendRequest) {
+
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromHttpUrl(BASE_URL + "/message/sms/send")
                 .queryParam("mobile_phone", sendRequest.getMobilePhone())

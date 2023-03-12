@@ -57,14 +57,14 @@ public class TelegramBotServiceImp implements TelegramBotService {
 
     private SendMessage getOrderInfo(OrderSendToBotDTO order){
         StringBuilder orderMessage = new StringBuilder();
-        orderMessage.append("=========BUYURTMA=========\n\n");
-        orderMessage.append("MAHSULOTLAR : \n\n");
+        orderMessage.append("========= BUYURTMA =========\n\n");
+        orderMessage.append(" MAHSULOTLAR : \n\n");
         order.getOrderProducts().forEach(product -> {
             orderMessage.append(product.getName())
-                    .append("---").append(product.getCount()).append("X")
-                    .append("---").append(product.getPrice()).append(" so'm")
-                    .append("---").append(product.getInstitutionName())
-                    .append("\n.........................................\n");
+                    .append(" --- ").append(product.getQuantity()).append("X")
+                    .append(" --- ").append(product.getPrice()).append(" so'm")
+                    .append(" --- ").append(product.getInstitutionName())
+                    .append("\n ......................................... \n");
         });
         orderMessage.append("\n\n HAMMASI : ").append(order.getTotalPrice()).append(" So'm")
                 .append("\n Mijoz raqami : ").append(order.getClientPhoneNumber())

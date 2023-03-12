@@ -19,6 +19,7 @@ import uz.md.shopapp.mapper.OrderProductMapper;
 import uz.md.shopapp.repository.*;
 import uz.md.shopapp.service.QueryService;
 import uz.md.shopapp.service.contract.OrderService;
+import uz.md.shopapp.service.contract.TelegramBotService;
 import uz.md.shopapp.utils.CommonUtils;
 import uz.md.shopapp.utils.MessageConstants;
 
@@ -41,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
-    private final InstitutionRepository institutionRepository;
+    private final TelegramBotService telegramBotService;
 
     /**
      * getting by id
@@ -153,6 +154,8 @@ public class OrderServiceImpl implements OrderService {
         order.setDeliveryPrice(25000.0);
         order.setOrderProducts(orderProducts);
 
+        orderRepository.save(order);
+        telegramBotService.sendOrderToGroup(orderMapper.toSendBotDTO(order));
         return ApiResult
                 .successResponse(orderMapper
                         .toDTO(order));
