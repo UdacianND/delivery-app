@@ -13,9 +13,7 @@ import uz.md.shopapp.dtos.order.OrderAddDTO;
 import uz.md.shopapp.dtos.order.OrderDTO;
 import uz.md.shopapp.dtos.order.OrderProductAddDTO;
 import uz.md.shopapp.dtos.request.SimpleSortRequest;
-import uz.md.shopapp.exceptions.IllegalRequestException;
 import uz.md.shopapp.exceptions.NotFoundException;
-import uz.md.shopapp.mapper.AddressMapper;
 import uz.md.shopapp.mapper.OrderMapper;
 import uz.md.shopapp.mapper.OrderProductMapper;
 import uz.md.shopapp.repository.*;
@@ -67,54 +65,61 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<OrderDTO> add(OrderAddDTO dto) {
+        Order order = orderMapper.fromAddDTO(dto);
+        String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
 
-        List<OrderProductAddToBotDTO> orderedProducts = List.of(
-                new OrderProductAddToBotDTO("Coca cola", 2, 9000D, "Evos"),
-                new OrderProductAddToBotDTO("Lavash", 1, 24000D, "Evos")
-        );
+        User user = userRepository.findByPhoneNumber(currentUserPhoneNumber)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("USER_NOT_FOUND")
+                        .messageRu("")
+                        .build());
+        order.setUser(user);
+        order.setActive(true);
+        order.setDeleted(false);
+
+        List<OrderProduct> orderProducts = new ArrayList<>();
+        List<OrderProductAddDTO> orderProductAddDTOList = dto.getOrderProducts();
+        List<OrderProductAddToBotDTO> orderProductsForBot = new ArrayList<>();
+        double totalPrice = 0;
+        for (OrderProductAddDTO addDTO : orderProductAddDTOList) {
+            OrderProduct orderProduct = orderProductMapper.fromAddDTO(addDTO);
+            Product product = productRepository
+                    .findById(addDTO.getProductId())
+                    .orElseThrow(() -> NotFoundException.builder()
+                            .messageUz("ORDER_PRODUCT_NOT_FOUND")
+                            .messageRu("")
+                            .build());
+            orderProduct.setProduct(product);
+            orderProduct.setPrice(product.getPrice() * addDTO.getQuantity());
+            totalPrice += orderProduct.getPrice();
+            String institutionName = productRepository.getInstitutionNameById(addDTO.getProductId());
+            OrderProductAddToBotDTO orderProductDto = new OrderProductAddToBotDTO(
+                    product.getNameUz(),addDTO.getQuantity(), product.getPrice(),institutionName);
+            orderProducts.add(orderProduct);
+            orderProductsForBot.add(orderProductDto);
+        }
+        order.setOverallPrice(totalPrice);
+        order.setDeliveryPrice(0D);
+        orderRepository.save(order);
+        orderProducts.forEach(orderProduct -> {
+            orderProduct.setOrder(order);
+            orderProductRepository.save(orderProduct);
+        });
+
         OrderSendToBotDto orderDto = new OrderSendToBotDto(
-                "+998914144594",
+                currentUserPhoneNumber,
                 dto.getLocation(),
                 dto.getDeliveryTime(),
-                orderedProducts,
-                42000D);
+                orderProductsForBot,
+                totalPrice);
         telegrambotService.sendOrderToGroup(orderDto);
-//        Order order = orderMapper.fromAddDTO(dto);
-//        String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-//
-//        User user = userRepository.findByPhoneNumber(currentUserPhoneNumber)
-//                .orElseThrow(() -> NotFoundException.builder()
-//                        .messageUz("USER_NOT_FOUND")
-//                        .messageRu("")
-//                        .build());
-//        order.setUser(user);
-//        order.setActive(true);
-//        order.setDeleted(false);
-//        orderRepository.save(order);
-//        List<OrderProduct> orderProducts = new ArrayList<>();
-//        for (OrderProductAddDTO addDTO : dto.getOrderProducts()) {
-//            OrderProduct orderProduct = orderProductMapper.fromAddDTO(addDTO);
-//            orderProduct.setOrder(order);
-//            Product product = productRepository
-//                    .findById(addDTO.getProductId())
-//                    .orElseThrow(() -> NotFoundException.builder()
-//                            .messageUz("ORDER_PRODUCT_NOT_FOUND")
-//                            .messageRu("")
-//                            .build());
-//            orderProduct.setProduct(product);
-//            orderProduct.setPrice(product.getPrice() * addDTO.getQuantity());
-//            orderProductRepository.save(orderProduct);
-//            orderProducts.add(orderProduct);
-//        }
-//        double overallPrice = sumOrderOverallPrice(orderProducts);
-//        order.setOverallPrice(overallPrice);
-//        order.setOrderProducts(orderProducts);
-//
-//        return ApiResult
-//                .successResponse(orderMapper
-//                        .toDTO(order));
-        return null;
+
+        return ApiResult
+                .successResponse(orderMapper
+                        .toDTO(order));
     }
+
+
 
     private double sumOrderOverallPrice(List<OrderProduct> orderProducts) {
         double totalPrice = 0;
@@ -177,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
         return ApiResult
                 .successResponse(orderMapper
                         .toDTOList(orderRepository
-                                .findAllByUser_IdAndDeletedIsFalse(user.getId(),
+                                .findAllByUserId(user.getId(),
                                         PageRequest.of(page[0], page[1]))
                                 .getContent()));
     }
