@@ -58,17 +58,19 @@ public class TelegramBotServiceImp implements TelegramBotService {
     private SendMessage getOrderInfo(OrderSendToBotDTO order){
         StringBuilder orderMessage = new StringBuilder();
         orderMessage.append("========= BUYURTMA =========\n\n");
+        orderMessage.append("****").append(order.getInstitutionName())
+                .append("****");
         orderMessage.append(" MAHSULOTLAR : \n\n");
         order.getOrderProducts().forEach(product -> {
             orderMessage.append(product.getName())
                     .append(" --- ").append(product.getQuantity()).append("X")
                     .append(" --- ").append(product.getPrice()).append(" so'm")
-                    .append(" --- ").append(product.getInstitutionName())
                     .append("\n ......................................... \n");
         });
         orderMessage.append("\n\n HAMMASI : ").append(order.getTotalPrice()).append(" So'm")
                 .append("\n Mijoz raqami : ").append(order.getClientPhoneNumber())
-                .append("\n Yetkazib berish vaqti : ").append(order.getDeliveryTime());
+                .append("\n Yetkazib berish sanasi : ").append(order.getDeliveryTime().toLocalDate())
+                .append("\n Yetkazib berish vaqti : ").append(order.getDeliveryTime().toLocalTime());
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(GROUP_CHAT_ID);
         sendMessage.setText(orderMessage.toString());

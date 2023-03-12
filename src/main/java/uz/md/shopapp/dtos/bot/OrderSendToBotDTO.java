@@ -23,6 +23,12 @@ public class OrderSendToBotDTO {
     @NotNull(message = "ordered products must not be null")
     private List<OrderProductAddToBotDTO> orderProducts;
 
+    @NotNull(message = "ordered product institution name can not be null ")
+    private String institutionName;
+
+    @NotNull(message = "manager chat id can not be null ")
+    private String managerChatId;
+
     @NotNull(message = "total price must not be null")
     private double totalPrice;
 }
