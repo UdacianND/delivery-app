@@ -32,7 +32,7 @@ public class ClientController {
         return clientService.getMe();
     }
 
-    @GetMapping("/my-orders")
+    @PostMapping("/my-orders")
     @Operation(description = "Getting client orders")
     public ApiResult<List<OrderDTO>> getClientOrders() {
         return clientService.getMyOrders();

@@ -155,7 +155,6 @@ public class ClientServiceImpl implements ClientService {
                         .messageUz(USER_NOT_FOUND_UZ)
                         .messageRu(USER_NOT_FOUND_RU)
                         .build());
-
         Address address = addressMapper.fromAddDTO(addressAddDTO);
         address.setUser(user);
         addressRepository.save(address);

@@ -21,6 +21,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("select category.institution.manager.id from Product where id = :id")
     Long findMangerIdByProductId(Long id);
 
+    @Query("select category.institution.nameUz from Product where id = :id")
+    String getInstitutionNameById(Long id);
+
     @Query("select category.institution.manager.id from Product where id = :id")
     Long findMangerIdById(Long id);
 
