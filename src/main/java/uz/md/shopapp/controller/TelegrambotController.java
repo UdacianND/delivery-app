@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import uz.md.shopapp.service.contract.TelegrambotService;
+import uz.md.shopapp.service.contract.TelegramBotService;
 import uz.md.shopapp.utils.AppConstants;
 
 @RestController
@@ -19,7 +19,7 @@ import uz.md.shopapp.utils.AppConstants;
 @Slf4j
 public class TelegrambotController {
     public static final String BASE_URL = AppConstants.BASE_URL + "telegrambot";
-    private final TelegrambotService telegrambotService;
+    private final TelegramBotService telegrambotService;
 
     @PostMapping
     public void getUpdates(@RequestBody Update update) {

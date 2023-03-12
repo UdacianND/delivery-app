@@ -4,7 +4,6 @@ package uz.md.shopapp.dtos.bot;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import uz.md.shopapp.dtos.institution.LocationDto;
-import uz.md.shopapp.dtos.order.OrderProductAddDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class OrderSendToBotDto {
+public class OrderSendToBotDTO {
 
     @NotNull(message = "phone number must not be null")
     private String clientPhoneNumber;

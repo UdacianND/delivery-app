@@ -29,6 +29,8 @@ public class User extends AbsLongEntity implements UserDetails {
 
     private String lastName;
 
+    private Long chatId;
+
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 

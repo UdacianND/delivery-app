@@ -204,7 +204,7 @@ public class InstitutionServiceTest {
                 "description",
                 "description",
                 null,
-                null,
+                Mock.getLocation(),
                 institutionType,
                 null,
                 manager));

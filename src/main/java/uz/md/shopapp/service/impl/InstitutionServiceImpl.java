@@ -18,6 +18,7 @@ import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.InstitutionMapper;
 import uz.md.shopapp.repository.InstitutionRepository;
+import uz.md.shopapp.repository.InstitutionTypeRepository;
 import uz.md.shopapp.repository.UserRepository;
 import uz.md.shopapp.service.contract.FilesStorageService;
 import uz.md.shopapp.service.contract.InstitutionService;
@@ -44,21 +45,28 @@ public class InstitutionServiceImpl implements InstitutionService {
     private final InstitutionMapper institutionMapper;
     private final FilesStorageService filesStorageService;
     private final UserRepository userRepository;
+    private final InstitutionTypeRepository institutionTypeRepository;
 
     public InstitutionServiceImpl(InstitutionRepository institutionRepository,
                                   InstitutionMapper institutionMapper,
                                   FilesStorageService filesStorageService,
-                                  UserRepository userRepository) {
+                                  UserRepository userRepository,
+                                  InstitutionTypeRepository institutionTypeRepository) {
         this.institutionRepository = institutionRepository;
         this.institutionMapper = institutionMapper;
         this.filesStorageService = filesStorageService;
         this.userRepository = userRepository;
+        this.institutionTypeRepository = institutionTypeRepository;
     }
 
     @Override
     public ApiResult<InstitutionDTO> add(InstitutionAddDTO dto) {
 
-        if (dto == null || dto.getNameUz() == null || dto.getNameRu() == null)
+        if (dto == null
+                || dto.getNameUz() == null
+                || dto.getNameRu() == null
+                || dto.getInstitutionTypeId() == null
+                || dto.getManagerId() == null)
             throw BadRequestException.builder()
                     .messageUz(ERROR_IN_REQUEST_UZ)
                     .messageRu(ERROR_IN_REQUEST_RU)
@@ -72,6 +80,13 @@ public class InstitutionServiceImpl implements InstitutionService {
 
         Institution institution = institutionMapper
                 .fromAddDTO(dto);
+
+        institutionTypeRepository.findById(dto.getInstitutionTypeId())
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz(INSTITUTION_TYPE_NOT_FOUND_UZ)
+                        .messageRu(INSTITUTION_TYPE_NOT_FOUND_RU)
+                        .build());
+
         User manager = userRepository
                 .findById(dto.getManagerId())
                 .orElseThrow(() -> NotFoundException.builder()
@@ -79,7 +94,7 @@ public class InstitutionServiceImpl implements InstitutionService {
                         .messageRu("")
                         .build());
 
-        if (!manager.getRole().getName().equals("manager"))
+        if (!manager.getRole().getName().equals("MANAGER"))
             throw NotAllowedException.builder()
                     .messageRu("")
                     .messageUz("User with id " + dto.getManagerId() + " is not a manager")

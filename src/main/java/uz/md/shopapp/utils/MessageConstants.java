@@ -17,6 +17,9 @@ public interface MessageConstants {
     String INSTITUTION_NOT_FOUND_UZ = "Muassasa topilmadi";
     String INSTITUTION_NOT_FOUND_RU = "Учреждение не найден";
 
+    String INSTITUTION_TYPE_NOT_FOUND_UZ = "Muassasa turi topilmadi";
+    String INSTITUTION_TYPE_NOT_FOUND_RU = "Учреждение иметь не найден";
+
     String WRONG_PHONE_NUMBER_OR_PASSWORD_UZ = "Telefon raqam yoki parol xato";
     String WRONG_PHONE_NUMBER_OR_PASSWORD_RU = "неверный номер телефона или пароль";
 

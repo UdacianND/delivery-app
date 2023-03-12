@@ -25,7 +25,7 @@ import static uz.md.shopapp.domain.enums.PermissionEnum.*;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile(value = {"!test", "dev"})
+@Profile(value = {"test", "dev"})
 public class DataLoader implements CommandLineRunner {
 
     private final LocationRepository locationRepository;
@@ -94,11 +94,13 @@ public class DataLoader implements CommandLineRunner {
             addAdmin();
             saveManagerRole();
             saveClientRole();
-            initLocations();
-            initInstitutionTypes();
-            initInstitutions();
-            initCategories();
-            initProducts();
+            if (!activeProfile.equals("test")) {
+                initLocations();
+                initInstitutionTypes();
+                initInstitutions();
+                initCategories();
+                initProducts();
+            }
         }
     }
 

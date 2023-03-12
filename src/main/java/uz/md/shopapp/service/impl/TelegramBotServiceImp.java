@@ -8,9 +8,9 @@ import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
-import uz.md.shopapp.dtos.bot.OrderSendToBotDto;
+import uz.md.shopapp.dtos.bot.OrderSendToBotDTO;
 import uz.md.shopapp.dtos.institution.LocationDto;
-import uz.md.shopapp.service.contract.TelegrambotService;
+import uz.md.shopapp.service.contract.TelegramBotService;
 
 import java.util.List;
 
@@ -18,9 +18,10 @@ import static uz.md.shopapp.utils.AppConstants.*;
 
 @Service
 @RequiredArgsConstructor
-public class TelegrambotServiceImp implements TelegrambotService {
+public class TelegramBotServiceImp implements TelegramBotService {
 
     private final RestTemplate restTemplate;
+
     @Override
     public void sendBotWebApp(Long chatId) {
         SendMessage webAppLink = getWebAppLink(chatId);
@@ -28,7 +29,8 @@ public class TelegrambotServiceImp implements TelegrambotService {
     }
 
     @Override
-    public void sendOrderToGroup(OrderSendToBotDto order) {
+    public void sendOrderToGroup(OrderSendToBotDTO order) {
+
         SendMessage orderInfo = getOrderInfo(order);
         LocationDto locationDto = order.getLocation();
         Location location = new Location();
@@ -53,7 +55,7 @@ public class TelegrambotServiceImp implements TelegrambotService {
         return sendMessage;
     }
 
-    private SendMessage getOrderInfo(OrderSendToBotDto order){
+    private SendMessage getOrderInfo(OrderSendToBotDTO order){
         StringBuilder orderMessage = new StringBuilder();
         orderMessage.append("=========BUYURTMA=========\n\n");
         orderMessage.append("MAHSULOTLAR : \n\n");

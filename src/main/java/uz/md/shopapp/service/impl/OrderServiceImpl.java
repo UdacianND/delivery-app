@@ -83,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<OrderDTO> add(OrderAddDTO dto) {
+
         log.info("add order called with dto: " + dto);
         if (dto == null
                 || dto.getLocation() == null
@@ -149,6 +150,7 @@ public class OrderServiceImpl implements OrderService {
 
         double overallPrice = sumOrderOverallPrice(orderProducts);
         order.setOverallPrice(overallPrice);
+        order.setDeliveryPrice(25000.0);
         order.setOrderProducts(orderProducts);
 
         return ApiResult
