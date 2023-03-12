@@ -1,6 +1,8 @@
 package uz.md.shopapp.service;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +44,13 @@ public class CategoryServiceTest {
     private Category category;
 
     private Institution institution;
+
     private InstitutionType institutionType;
+
     private User manager;
+
     private Location location;
+
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -60,10 +66,9 @@ public class CategoryServiceTest {
 
     @BeforeEach
     public void init() {
-        setupType();
-        setupLocation();
-        setupManager();
-        setupInstitution();
+        institution = Mock.getInstitution();
+        institutionTypeRepository.saveAndFlush(institution.getType());
+        institutionRepository.saveAndFlush(institution);
         category = Mock.getCategory(institution);
         categoryRepository.deleteAll();
     }
@@ -71,32 +76,6 @@ public class CategoryServiceTest {
     @AfterEach
     public void destroy() {
         categoryRepository.deleteAll();
-    }
-
-    private void setupManager() {
-        Role role = roleRepository.findByName("MANAGER")
-                .orElseThrow(() -> new NotFoundException("ROLE NOT FOUND", ""));
-        manager = new User(
-                "Ali",
-                "Yusupov",
-                "+998941001010",
-                role);
-        userRepository.saveAndFlush(manager);
-    }
-
-    private void setupType() {
-        institutionType = Mock.getInstitutionType();
-        institutionTypeRepository.saveAndFlush(institutionType);
-    }
-
-    private void setupLocation() {
-        location = Mock.getLocation();
-        locationRepository.saveAndFlush(location);
-    }
-
-    private void setupInstitution() {
-        institution = Mock.getInstitution(location, institutionType, manager);
-        institutionRepository.saveAndFlush(institution);
     }
 
     @Test
@@ -111,7 +90,7 @@ public class CategoryServiceTest {
                 institution.getId());
 
         ApiResult<CategoryDTO> result = categoryService.add(addDTO);
-
+        Assertions.assertNotNull(result);
         assertTrue(result.isSuccess());
         List<Category> all = categoryRepository.findAll();
         Category category1 = all.get(0);
@@ -159,8 +138,10 @@ public class CategoryServiceTest {
 
         categoryRepository.saveAndFlush(category);
         ApiResult<CategoryDTO> result = categoryService.findById(category.getId());
+        Assertions.assertNotNull(result);
         assertTrue(result.isSuccess());
         CategoryDTO data = result.getData();
+        Assertions.assertNotNull(data);
         assertNotNull(data.getId());
         assertEquals(data.getId(), category.getId());
 
@@ -267,9 +248,10 @@ public class CategoryServiceTest {
         categoryRepository.saveAndFlush(category);
         CategoryEditDTO editDTO = new CategoryEditDTO("new name", "", "", "description", institution.getId(), category.getId());
         ApiResult<CategoryDTO> result = categoryService.edit(editDTO);
-
+        Assertions.assertNotNull(result);
         assertTrue(result.isSuccess());
         CategoryDTO data = result.getData();
+        Assertions.assertNotNull(data);
         assertEquals(1, categoryRepository.count());
 
         assertEquals(data.getId(), editDTO.getId());
@@ -299,8 +281,10 @@ public class CategoryServiceTest {
     void shouldGetAllForInfo() {
         categoryRepository.saveAllAndFlush(TestUtil.generateMockCategories(10, institution));
         ApiResult<List<CategoryInfoDTO>> result = categoryService.getAllForInfo();
+        Assertions.assertNotNull(result);
         assertTrue(result.isSuccess());
         List<CategoryInfoDTO> data = result.getData();
+        Assertions.assertNotNull(data);
         List<Category> all = categoryRepository.findAll();
         TestUtil.checkCategoriesInfoEquality(data, all);
     }
@@ -331,9 +315,10 @@ public class CategoryServiceTest {
 
         ApiResult<List<CategoryInfoDTO>> result = categoryService
                 .getAllByInstitutionId(institution.getId());
-
+        Assertions.assertNotNull(result);
         assertTrue(result.isSuccess());
         List<CategoryInfoDTO> data = result.getData();
+        Assertions.assertNotNull(data);
         List<Category> all = categoryRepository.findAll();
         TestUtil.checkCategoriesInfoEquality(data, all.subList(0, 6));
     }
@@ -362,9 +347,10 @@ public class CategoryServiceTest {
 
         ApiResult<List<CategoryInfoDTO>> result = categoryService
                 .getAllByInstitutionIdAndPage(institution.getId(), "0-4");
-
+        Assertions.assertNotNull(result);
         assertTrue(result.isSuccess());
         List<CategoryInfoDTO> data = result.getData();
+        Assertions.assertNotNull(data);
         List<Category> all = categoryRepository.findAll();
         TestUtil.checkCategoriesInfoEquality(data, all.subList(5, 9));
     }
@@ -393,10 +379,11 @@ public class CategoryServiceTest {
 
         ApiResult<List<CategoryInfoDTO>> result = categoryService
                 .getAllByInstitutionIdAndPage(institution.getId(), "1-4");
-
+        Assertions.assertNotNull(result);
         assertTrue(result.isSuccess());
         List<CategoryInfoDTO> data = result.getData();
         List<Category> all = categoryRepository.findAll();
+        Assertions.assertNotNull(data);
         TestUtil.checkCategoriesInfoEquality(data, all.subList(4, 8));
     }
 
@@ -406,6 +393,7 @@ public class CategoryServiceTest {
         categoryRepository.saveAllAndFlush(TestUtil.generateMockCategories(10, institution));
         categoryRepository.saveAndFlush(category);
         ApiResult<Void> delete = categoryService.delete(category.getId());
+        Assertions.assertNotNull(delete);
         assertTrue(delete.isSuccess());
         Optional<Category> byId = categoryRepository.findById(category.getId());
         assertTrue(byId.isEmpty());
@@ -428,6 +416,7 @@ public class CategoryServiceTest {
         );
         categoryRepository.saveAndFlush(category);
         ApiResult<Void> delete = categoryService.delete(category.getId());
+        Assertions.assertNotNull(delete);
         assertTrue(delete.isSuccess());
         assertEquals(0, productRepository.count());
     }

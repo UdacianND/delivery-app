@@ -3,9 +3,11 @@ package uz.md.shopapp.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import uz.md.shopapp.domain.Institution;
 import uz.md.shopapp.domain.Product;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -21,4 +23,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("select category.institution.manager.id from Product where id = :id")
     Long findMangerIdById(Long id);
+
+    @Query("select category.institution from Product where id = :id")
+    Optional<Institution> findInstitutionByProductId(Long id);
+
+
 }

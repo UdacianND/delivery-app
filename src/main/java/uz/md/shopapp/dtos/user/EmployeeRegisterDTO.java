@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.annotation.RegEx;
-import javax.annotation.meta.When;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,8 +20,9 @@ public class EmployeeRegisterDTO {
     private String lastName;
 
     @NotBlank(message = "Phone Number cannot be blank")
-    @RegEx(when = When.ALWAYS)
     private String phoneNumber;
+
+    private Long chatId;
 
     @NotBlank(message = "Password cannot be blank")
     private String password;

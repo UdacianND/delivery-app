@@ -4,6 +4,7 @@ package uz.md.shopapp.dtos.order;
 import lombok.*;
 import uz.md.shopapp.domain.enums.OrderStatus;
 import uz.md.shopapp.dtos.address.AddressDTO;
+import uz.md.shopapp.dtos.institution.InstitutionInfoDTO;
 import uz.md.shopapp.dtos.institution.LocationDto;
 import uz.md.shopapp.dtos.orderProduct.OrderProductDTO;
 
@@ -23,5 +24,6 @@ public class OrderDTO {
     private Double deliveryPrice;
     private LocalDateTime deliveryTime;
     private LocationDto location;
+    private Long institutionId;
     private List<OrderProductDTO> orderProducts;
 }

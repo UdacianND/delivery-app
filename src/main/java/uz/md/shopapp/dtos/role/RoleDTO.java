@@ -4,6 +4,7 @@ import lombok.*;
 import uz.md.shopapp.domain.enums.PermissionEnum;
 
 import java.util.Set;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -14,10 +15,10 @@ public class RoleDTO {
     private Integer id;
 
     private String nameUz;
-private String nameRu;
+    private String nameRu;
 
     private String descriptionUz;
-private String descriptionRu;
+    private String descriptionRu;
 
     private Set<PermissionEnum> permissions;
 }

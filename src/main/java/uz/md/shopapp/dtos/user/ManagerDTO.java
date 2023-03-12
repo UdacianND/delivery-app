@@ -4,18 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uz.md.shopapp.domain.enums.PermissionEnum;
-
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class ClientDto {
-    private Long id;
+public class ManagerDTO {
+
     private String firstName;
+
     private String lastName;
+
+    private Long chatId;
+
     private String phoneNumber;
-    private Set<PermissionEnum> permissions;
+
 }

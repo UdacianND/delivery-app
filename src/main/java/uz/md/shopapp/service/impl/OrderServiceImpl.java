@@ -2,6 +2,7 @@ package uz.md.shopapp.service.impl;
 
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uz.md.shopapp.domain.*;
@@ -11,9 +12,8 @@ import uz.md.shopapp.dtos.order.OrderAddDTO;
 import uz.md.shopapp.dtos.order.OrderDTO;
 import uz.md.shopapp.dtos.order.OrderProductAddDTO;
 import uz.md.shopapp.dtos.request.SimpleSortRequest;
-import uz.md.shopapp.exceptions.IllegalRequestException;
+import uz.md.shopapp.exceptions.BadRequestException;
 import uz.md.shopapp.exceptions.NotFoundException;
-import uz.md.shopapp.mapper.AddressMapper;
 import uz.md.shopapp.mapper.OrderMapper;
 import uz.md.shopapp.mapper.OrderProductMapper;
 import uz.md.shopapp.repository.*;
@@ -27,6 +27,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -36,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final InstitutionRepository institutionRepository;
 
     /**
      * getting by id
@@ -44,18 +46,32 @@ public class OrderServiceImpl implements OrderService {
      * @return the order
      */
     private Order getById(Long id) {
+        log.info("getting by id " + id);
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         return orderRepository
                 .findById(id)
                 .orElseThrow(() -> {
                     throw NotFoundException.builder()
-                            .messageUz("ORDER_NOT_FOUND_WITH_ID" + id)
-                            .messageRu("")
+                            .messageUz(id + " raqamli buyurtma topilmadi ")
+                            .messageRu("заказ не найден с идентификатором " + id)
                             .build();
                 });
     }
 
     @Override
     public ApiResult<OrderDTO> findById(Long id) {
+        log.info("findById called with id " + id);
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         return ApiResult.successResponse(
                 orderMapper.toDTO(getById(id)));
     }
@@ -63,19 +79,51 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<OrderDTO> add(OrderAddDTO dto) {
+        log.info("add order called with dto: " + dto);
+        if (dto == null
+                || dto.getLocation() == null
+                || dto.getOrderProducts() == null
+                || dto.getOrderProducts().size() == 0)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
 
         Order order = orderMapper.fromAddDTO(dto);
+
         String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
+
+        if (currentUserPhoneNumber == null)
+            throw NotFoundException.builder()
+                    .messageUz("foydalanuvchi topilmadi")
+                    .messageRu("Пользователь не найден")
+                    .build();
 
         User user = userRepository
                 .findByPhoneNumber(currentUserPhoneNumber)
                 .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("USER_NOT_FOUND")
-                        .messageRu("")
+                        .messageUz("foydalanuvchi topilmadi")
+                        .messageRu("Пользователь не найден")
                         .build());
+
         order.setUser(user);
         order.setActive(true);
         order.setDeleted(false);
+
+        Long productId = dto.getOrderProducts()
+                .stream()
+                .findFirst()
+                .orElseThrow()
+                .getProductId();
+
+        Institution institution = productRepository
+                .findInstitutionByProductId(productId)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("Muassasa topilmadi")
+                        .messageRu("Объект не найден")
+                        .build());
+
+        order.setInstitution(institution);
         orderRepository.save(order);
         List<OrderProduct> orderProducts = new ArrayList<>();
 
@@ -85,9 +133,10 @@ public class OrderServiceImpl implements OrderService {
             Product product = productRepository
                     .findById(addDTO.getProductId())
                     .orElseThrow(() -> NotFoundException.builder()
-                            .messageUz("ORDER_PRODUCT_NOT_FOUND")
-                            .messageRu("")
+                            .messageUz("Buyurtma mahsuloti topilmadi")
+                            .messageRu("заказ товара не найден")
                             .build());
+
             orderProduct.setProduct(product);
             orderProduct.setPrice(product.getPrice() * addDTO.getQuantity());
             orderProductRepository.save(orderProduct);
@@ -104,6 +153,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private double sumOrderOverallPrice(List<OrderProduct> orderProducts) {
+
+        log.info("Sum order overall price for order products {}", orderProducts);
+
+        if (orderProducts == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         double totalPrice = 0;
         for (OrderProduct orderProduct : orderProducts) {
             totalPrice += orderProduct.getPrice();
@@ -113,10 +171,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<Void> delete(Long id) {
+
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         if (!orderRepository.existsById(id))
             throw NotFoundException.builder()
-                    .messageUz("ORDER_DOES_NOT_EXIST")
-                    .messageRu("")
+                    .messageUz("Buyurtma topilmadi")
+                    .messageRu("Заказ не найден")
                     .build();
         orderRepository.deleteById(id);
         return ApiResult.successResponse();
@@ -125,6 +190,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<List<OrderDTO>> getAllByPage(String pagination) {
+
+        log.info("getAllByPage called with pagination " + pagination);
+
+        if (pagination == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         int[] page = CommonUtils.getPagination(pagination);
         return ApiResult.successResponse(
                 orderMapper.toDTOList(orderRepository
@@ -134,6 +208,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<List<OrderDTO>> findAllBySort(SimpleSortRequest request) {
+
+        log.info("findAllBySort request {}", request);
+
+        if (request == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         TypedQuery<Order> typedQuery = queryService.generateSimpleSortQuery(Order.class, request);
         return ApiResult
                 .successResponse(orderMapper
@@ -143,6 +226,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<List<OrderDTO>> getOrdersByStatus(String status, String pagination) {
+
+        log.info("getting orders by status " + status + " " + pagination);
+
+        if (status == null || pagination == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         int[] page = CommonUtils.getPagination(pagination);
         return ApiResult
                 .successResponse(orderMapper
@@ -153,12 +245,20 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<List<OrderDTO>> getOrdersByUserId(UUID userid, String pagination) {
+
+        log.info("getting orders by user id {}  with pagination {}", userid, pagination);
+        if (userid == null || pagination == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xatolik")
+                    .messageRu("Ошибка в запросе")
+                    .build();
+
         String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
         User user = userRepository
                 .findByPhoneNumber(currentUserPhoneNumber)
                 .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("User not found")
-                        .messageRu("")
+                        .messageUz("Foydalanuvchi topilmadi")
+                        .messageRu("Пользователь не найден")
                         .build());
         int[] page = CommonUtils.getPagination(pagination);
         return ApiResult

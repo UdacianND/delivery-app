@@ -46,6 +46,9 @@ public class Order extends AbsLongEntity {
     @Column(nullable = false)
     private Double overallPrice;
 
+    @ManyToOne
+    private Institution institution;
+
 
     @Override
     public boolean equals(Object o) {
