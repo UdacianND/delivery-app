@@ -19,7 +19,6 @@ public interface OrderProductMapper extends EntityMapper<OrderProduct, OrderProd
     OrderProduct fromAddDTO(OrderProductAddDTO addDTO);
 
     @Mapping(target = "name", source = "product.nameUz")
-    @Mapping(target = "institutionName", source = "product.category.institution.nameUz")
     OrderProductAddToBotDTO toBotDTO(OrderProduct orderProduct);
 
     List<OrderProductAddToBotDTO> toBotDTO(List<OrderProduct> orderProducts);

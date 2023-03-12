@@ -17,9 +17,12 @@ public class OrderSendToBotDTO {
 
     @NotNull(message = "phone number must not be null")
     private String clientPhoneNumber;
+
     @NotNull(message = "location must not be null")
     private LocationDto location;
+
     private LocalDateTime deliveryTime = LocalDateTime.now();
+
     @NotNull(message = "ordered products must not be null")
     private List<OrderProductAddToBotDTO> orderProducts;
 
