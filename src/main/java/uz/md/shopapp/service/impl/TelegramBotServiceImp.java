@@ -67,7 +67,7 @@ public class TelegramBotServiceImp implements TelegramBotService {
                     .append(" --- ").append(product.getPrice()).append(" so'm")
                     .append("\n ......................................... \n");
         });
-        orderMessage.append("\n\n HAMMASI : ").append(order.getTotalPrice()).append(" So'm")
+        orderMessage.append("\n\n HAMMASI : ").append(order.getOverallPrice()).append(" So'm")
                 .append("\n Mijoz raqami : ").append(order.getClientPhoneNumber())
                 .append("\n Yetkazib berish sanasi : ").append(order.getDeliveryTime().toLocalDate())
                 .append("\n Yetkazib berish vaqti : ").append(order.getDeliveryTime().toLocalTime());

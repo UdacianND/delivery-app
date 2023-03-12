@@ -122,7 +122,7 @@ public class DataLoader implements CommandLineRunner {
                         "",
                         "description",
                         "description",
-                        Math.round(random.nextDouble() * 500) + 100.0,
+                        (long) (Math.round(random.nextLong() * 500) + 100),
                         categoryRepository.findById(i + 1L).orElseThrow()
                 ));
             }
