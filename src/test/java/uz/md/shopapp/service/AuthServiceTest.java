@@ -119,7 +119,6 @@ public class AuthServiceTest {
                 employee.getFirstName(),
                 employee.getLastName(),
                 employee.getPhoneNumber(),
-                employee.getChatId(),
                 employee.getPassword(),
                 employee.getRole().getId()
         );

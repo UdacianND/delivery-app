@@ -19,7 +19,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findAllByUserId(Long user_id, Pageable pageable);
 
-    @Query("select o from Order o where o.user.id = :user_id and o.deleted=false")
     List<Order> findAllByUserId(Long user_id);
 
     Long countAllByUser_IdAndDeletedIsFalse(Long user_id);

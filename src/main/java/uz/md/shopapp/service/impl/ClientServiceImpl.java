@@ -79,7 +79,7 @@ public class ClientServiceImpl implements ClientService {
         return ApiResult
                 .successResponse(orderMapper
                         .toDTOList(orderRepository
-                                .findAllByUser_IdAndDeletedIsFalse(user.getId())));
+                                .findAllByUserId(user.getId())));
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ClientServiceImpl implements ClientService {
         int[] pagination = CommonUtils.getPagination(page);
         return ApiResult.successResponse(orderMapper
                 .toDTOList(orderRepository
-                        .findAllByUser_IdAndDeletedIsFalse(
+                        .findAllByUserId(
                                 user.getId(),
                                 PageRequest.of(pagination[0], pagination[1]))
                         .getContent()));

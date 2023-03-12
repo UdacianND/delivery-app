@@ -12,8 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.md.shopapp.service.contract.TelegrambotService;
 import uz.md.shopapp.utils.AppConstants;
 
-import static uz.md.shopapp.utils.AppConstants.*;
-
 @RestController
 @RequestMapping(TelegrambotController.BASE_URL)
 @RequiredArgsConstructor
@@ -24,9 +22,9 @@ public class TelegrambotController {
     private final TelegrambotService telegrambotService;
 
     @PostMapping
-    public void getUpdates(@RequestBody Update update){
+    public void getUpdates(@RequestBody Update update) {
         Message message = update.getMessage();
-        if(message == null || !message.isUserMessage())
+        if (message == null || !message.isUserMessage())
             return;
         Long chatId = message.getChatId();
         telegrambotService.sendBotWebApp(chatId);

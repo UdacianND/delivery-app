@@ -267,7 +267,7 @@ public class OrderServiceImpl implements OrderService {
         return ApiResult
                 .successResponse(orderMapper
                         .toDTOList(orderRepository
-                                .findAllByUser_IdAndDeletedIsFalse(user.getId(),
+                                .findAllByUserId(user.getId(),
                                         PageRequest.of(page[0], page[1]))
                                 .getContent()));
     }

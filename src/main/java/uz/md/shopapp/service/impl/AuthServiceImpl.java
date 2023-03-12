@@ -138,7 +138,7 @@ public class AuthServiceImpl implements AuthService {
         if (accessToken == null)
             throw IllegalRequestException.builder()
                     .messageUz(TOKEN_CREATION_ERROR_UZ)
-                    .messageRu(TOKEN_CREATION_ERROR_UZ)
+                    .messageRu(TOKEN_CREATION_ERROR_RU)
                     .build();
 
         TokenDTO tokenDTO = new TokenDTO(accessToken);
