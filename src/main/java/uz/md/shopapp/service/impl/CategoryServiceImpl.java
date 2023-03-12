@@ -23,6 +23,9 @@ import uz.md.shopapp.utils.CommonUtils;
 
 import java.util.List;
 
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_RU;
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_UZ;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -48,12 +51,11 @@ public class CategoryServiceImpl implements CategoryService {
                 || dto.getNameRu() == null
                 || dto.getInstitutionId() == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xato bor")
-                    .messageRu("В запросе ошибка")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         User currentUser = getCurrentUser();
-
 
         Institution institution = institutionRepository
                 .findById(dto.getInstitutionId())
@@ -78,6 +80,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category category = categoryMapper
                 .fromAddDTO(dto);
+
         category.setInstitution(institution);
 
         return ApiResult
@@ -91,8 +94,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (id == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xato bor")
-                    .messageRu("В запросе ошибка")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         return ApiResult.successResponse(categoryMapper
@@ -111,8 +114,8 @@ public class CategoryServiceImpl implements CategoryService {
                 || editDTO.getNameUz() == null
                 || editDTO.getInstitutionId() == null || editDTO.getId() == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xato bor")
-                    .messageRu("В запросе ошибка")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         User currentUser = getCurrentUser();
@@ -160,7 +163,7 @@ public class CategoryServiceImpl implements CategoryService {
                             .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
                             .messageRu("Этот цифровой Пользователь не найден")
                             .build());
-        throw  NotFoundException.builder()
+        throw NotFoundException.builder()
                 .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
                 .messageRu("Этот цифровой Пользователь не найден")
                 .build();

@@ -15,8 +15,6 @@ public class ManagerDTO {
 
     private String lastName;
 
-    private Long chatId;
-
     private String phoneNumber;
 
 }

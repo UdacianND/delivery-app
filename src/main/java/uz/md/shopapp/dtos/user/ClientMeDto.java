@@ -16,7 +16,6 @@ public class ClientMeDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private Long chatId;
     private String phoneNumber;
     private List<AddressDTO> addresses;
     private Long numberOfOrders;

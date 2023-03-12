@@ -22,8 +22,6 @@ public class EmployeeRegisterDTO {
     @NotBlank(message = "Phone Number cannot be blank")
     private String phoneNumber;
 
-    private Long chatId;
-
     @NotBlank(message = "Password cannot be blank")
     private String password;
 

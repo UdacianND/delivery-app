@@ -9,6 +9,7 @@ import uz.md.shopapp.dtos.address.AddressAddDTO;
 import uz.md.shopapp.dtos.address.AddressDTO;
 import uz.md.shopapp.dtos.order.OrderDTO;
 import uz.md.shopapp.dtos.user.ClientMeDto;
+import uz.md.shopapp.exceptions.BadRequestException;
 import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.AddressMapper;
@@ -21,6 +22,8 @@ import uz.md.shopapp.service.contract.ClientService;
 import uz.md.shopapp.utils.CommonUtils;
 
 import java.util.List;
+
+import static uz.md.shopapp.utils.MessageConstants.*;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -47,13 +50,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResult<ClientMeDto> getMe() {
-        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-        User user = userRepository
-                .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("Foydalanuvchi topilmadi")
-                        .messageRu("")
-                        .build());
+
+        User user = getCurrentUser();
 
         if (!user.getRole().getName().equals("CLIENT"))
             throw NotAllowedException.builder()
@@ -70,13 +68,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResult<List<OrderDTO>> getMyOrders() {
-        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-        User user = userRepository
-                .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("Foydalanuvchi topilmadi")
-                        .messageRu("")
-                        .build());
+
+        User user = getCurrentUser();
 
         if (!user.getRole().getName().equals("CLIENT"))
             throw NotAllowedException.builder()
@@ -91,19 +84,21 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResult<List<OrderDTO>> getMyOrders(String page) {
-        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-        User user = userRepository
-                .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("Foydalanuvchi topilmadi")
-                        .messageRu("")
-                        .build());
+
+        if (page == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
+
+        User user = getCurrentUser();
 
         if (!user.getRole().getName().equals("CLIENT"))
             throw NotAllowedException.builder()
                     .messageUz("Siz client emassiz")
                     .messageRu("")
                     .build();
+
         int[] pagination = CommonUtils.getPagination(page);
         return ApiResult.successResponse(orderMapper
                 .toDTOList(orderRepository
@@ -115,13 +110,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResult<List<AddressDTO>> getMyAddresses() {
-        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-        User user = userRepository
-                .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("Foydalanuvchi topilmadi")
-                        .messageRu("")
-                        .build());
+
+        User user = getCurrentUser();
 
         if (!user.getRole().getName().equals("CLIENT"))
             throw NotAllowedException.builder()
@@ -136,13 +126,22 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResult<AddressDTO> addAddress(AddressAddDTO addressAddDTO) {
+
+        if (addressAddDTO == null
+                || addressAddDTO.getLocation() == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
+
         User user = userRepository
                 .findById(addressAddDTO.getUserId())
                 .orElseThrow(() -> NotFoundException
                         .builder()
-                        .messageUz("Foydalanuvchi topilmadi")
-                        .messageRu("")
+                        .messageUz(USER_NOT_FOUND_UZ)
+                        .messageRu(USER_NOT_FOUND_RU)
                         .build());
+
         Address address = addressMapper.fromAddDTO(addressAddDTO);
         address.setUser(user);
         addressRepository.save(address);
@@ -150,8 +149,32 @@ public class ClientServiceImpl implements ClientService {
                 .toDTO(address));
     }
 
+    private User getCurrentUser() {
+
+        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
+
+        if (phoneNumber == null)
+            throw NotFoundException.builder()
+                    .messageUz(USER_NOT_FOUND_UZ)
+                    .messageRu(USER_NOT_ACTIVE_RU)
+                    .build();
+
+        return userRepository
+                .findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz(USER_NOT_FOUND_UZ)
+                        .messageRu("")
+                        .build());
+    }
+
     @Override
     public ApiResult<Void> delete(Long id) {
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .build();
+
         addressRepository.deleteById(id);
         return ApiResult.successResponse();
     }

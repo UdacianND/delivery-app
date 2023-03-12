@@ -20,10 +20,14 @@ import uz.md.shopapp.repository.*;
 import uz.md.shopapp.service.QueryService;
 import uz.md.shopapp.service.contract.OrderService;
 import uz.md.shopapp.utils.CommonUtils;
+import uz.md.shopapp.utils.MessageConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_RU;
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_UZ;
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +53,8 @@ public class OrderServiceImpl implements OrderService {
         log.info("getting by id " + id);
         if (id == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         return orderRepository
@@ -68,8 +72,8 @@ public class OrderServiceImpl implements OrderService {
         log.info("findById called with id " + id);
         if (id == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         return ApiResult.successResponse(
@@ -85,8 +89,8 @@ public class OrderServiceImpl implements OrderService {
                 || dto.getOrderProducts() == null
                 || dto.getOrderProducts().size() == 0)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         Order order = orderMapper.fromAddDTO(dto);
@@ -96,14 +100,14 @@ public class OrderServiceImpl implements OrderService {
         if (currentUserPhoneNumber == null)
             throw NotFoundException.builder()
                     .messageUz("foydalanuvchi topilmadi")
-                    .messageRu("Пользователь не найден")
+                    .messageRu(MessageConstants.USER_NOT_FOUND_RU)
                     .build();
 
         User user = userRepository
                 .findByPhoneNumber(currentUserPhoneNumber)
                 .orElseThrow(() -> NotFoundException.builder()
                         .messageUz("foydalanuvchi topilmadi")
-                        .messageRu("Пользователь не найден")
+                        .messageRu(MessageConstants.USER_NOT_FOUND_RU)
                         .build());
 
         order.setUser(user);
@@ -158,8 +162,8 @@ public class OrderServiceImpl implements OrderService {
 
         if (orderProducts == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         double totalPrice = 0;
@@ -174,8 +178,8 @@ public class OrderServiceImpl implements OrderService {
 
         if (id == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         if (!orderRepository.existsById(id))
@@ -190,13 +194,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResult<List<OrderDTO>> getAllByPage(String pagination) {
-
         log.info("getAllByPage called with pagination " + pagination);
 
         if (pagination == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         int[] page = CommonUtils.getPagination(pagination);
@@ -213,8 +216,8 @@ public class OrderServiceImpl implements OrderService {
 
         if (request == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         TypedQuery<Order> typedQuery = queryService.generateSimpleSortQuery(Order.class, request);
@@ -231,8 +234,8 @@ public class OrderServiceImpl implements OrderService {
 
         if (status == null || pagination == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         int[] page = CommonUtils.getPagination(pagination);
@@ -249,16 +252,16 @@ public class OrderServiceImpl implements OrderService {
         log.info("getting orders by user id {}  with pagination {}", userid, pagination);
         if (userid == null || pagination == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xatolik")
-                    .messageRu("Ошибка в запросе")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         String currentUserPhoneNumber = CommonUtils.getCurrentUserPhoneNumber();
         User user = userRepository
                 .findByPhoneNumber(currentUserPhoneNumber)
                 .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("Foydalanuvchi topilmadi")
-                        .messageRu("Пользователь не найден")
+                        .messageUz(MessageConstants.USER_NOT_FOUND_UZ)
+                        .messageRu(MessageConstants.USER_NOT_FOUND_RU)
                         .build());
         int[] page = CommonUtils.getPagination(pagination);
         return ApiResult
