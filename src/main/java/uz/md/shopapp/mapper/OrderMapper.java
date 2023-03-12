@@ -24,5 +24,8 @@ public interface OrderMapper extends EntityMapper<Order, OrderDTO> {
 
     @Mapping(target = "clientPhoneNumber", source = "user.phoneNumber")
     @Mapping(target = "orderProducts", expression = " java( orderProductMapper.toBotDTO(order.getOrderProducts()) )")
+    @Mapping(target = "institutionName", source = "institution.nameUz")
+    @Mapping(target = "managerChatId", source = "institution.manager.chatId")
+    @Mapping(target = "managerChatId", source = "institution.manager.chatId")
     OrderSendToBotDTO toSendBotDTO(Order order);
 }

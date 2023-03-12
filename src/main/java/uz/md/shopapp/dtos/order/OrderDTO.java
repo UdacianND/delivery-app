@@ -20,8 +20,8 @@ public class OrderDTO {
     private Long id;
     private Long userId;
     private OrderStatus status;
-    private Double overallPrice;
-    private Double deliveryPrice;
+    private Long overallPrice;
+    private Long deliveryPrice;
     private LocalDateTime deliveryTime;
     private LocationDto location;
     private Long institutionId;

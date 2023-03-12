@@ -33,5 +33,5 @@ public class OrderSendToBotDTO {
     private String managerChatId;
 
     @NotNull(message = "total price must not be null")
-    private double totalPrice;
+    private Long overallPrice;
 }

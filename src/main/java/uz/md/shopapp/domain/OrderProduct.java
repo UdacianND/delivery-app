@@ -26,7 +26,7 @@ public class OrderProduct extends AbsLongEntity {
     @Column(nullable = false)
     private Integer quantity;
     @Column(nullable = false)
-    private Double price;
+    private Long price;
 
     @Override
     public boolean equals(Object o) {

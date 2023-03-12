@@ -149,9 +149,9 @@ public class OrderServiceImpl implements OrderService {
             orderProducts.add(orderProduct);
         }
 
-        double overallPrice = sumOrderOverallPrice(orderProducts);
+        Long overallPrice = sumOrderOverallPrice(orderProducts);
         order.setOverallPrice(overallPrice);
-        order.setDeliveryPrice(25000.0);
+        order.setDeliveryPrice(25000L);
         order.setOrderProducts(orderProducts);
 
         orderRepository.save(order);
@@ -161,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
                         .toDTO(order));
     }
 
-    private double sumOrderOverallPrice(List<OrderProduct> orderProducts) {
+    private Long sumOrderOverallPrice(List<OrderProduct> orderProducts) {
 
         log.info("Sum order overall price for order products {}", orderProducts);
 
@@ -171,7 +171,7 @@ public class OrderServiceImpl implements OrderService {
                     .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
-        double totalPrice = 0;
+        Long totalPrice = 0L;
         for (OrderProduct orderProduct : orderProducts) {
             totalPrice += orderProduct.getPrice();
         }
