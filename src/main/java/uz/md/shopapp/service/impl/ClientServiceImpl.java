@@ -83,6 +83,20 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public ApiResult<Void> deleteMyOrders() {
+
+        User user = getCurrentUser();
+
+        if (!user.getRole().getName().equals("CLIENT"))
+            throw NotAllowedException.builder()
+                    .messageUz("Siz client emassiz")
+                    .messageRu("")
+                    .build();
+        orderRepository.deleteByUserId(user.getId());
+        return ApiResult.successResponse();
+    }
+
+    @Override
     public ApiResult<List<OrderDTO>> getMyOrders(String page) {
 
         if (page == null)
