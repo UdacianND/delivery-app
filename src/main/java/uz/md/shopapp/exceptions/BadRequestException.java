@@ -1,17 +1,18 @@
 package uz.md.shopapp.exceptions;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 
 @Builder
-@Getter
-public class IllegalRequestException extends RuntimeException {
+public class BadRequestException extends RuntimeException {
+
     private String messageUz;
     private String messageRu;
 
-    public IllegalRequestException(String messageUz, String messageRu) {
+    public BadRequestException(String messageUz, String messageRu){
         super(messageUz);
         this.messageUz = messageUz;
         this.messageRu = messageRu;
     }
+
 }

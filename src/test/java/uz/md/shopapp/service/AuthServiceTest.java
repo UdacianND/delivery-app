@@ -73,50 +73,6 @@ public class AuthServiceTest {
                 PermissionEnum.GET_ORDER
         )));
     }
-//
-//    @Test
-//    @Transactional
-//    void shouldRegisterClient() {
-//        userRepository.deleteAll();
-//        ClientLoginDTO clientLoginDTO = new ClientLoginDTO("+998954554545", "1212");
-//        ApiResult<Void> result = authService.registerClient(clientLoginDTO);
-//        assertTrue(result.isSuccess());
-//        List<User> all = userRepository.findAll();
-//        User added = all.get(0);
-//        assertEquals(added.getFirstName(), CLIENT_FIRSTNAME);
-//        assertEquals(added.getLastName(), CLIENT_LASTNAME);
-//        assertEquals(added.getPhoneNumber(), CLIENT_PHONE_NUMBER);
-//    }
-
-//    @Test
-//    @Transactional
-//    void shouldNotRegisterWithAlreadyExistedPhoneNumber() {
-//        userRepository.saveAndFlush(user);
-//        ClientRegisterDTO registerDTO = new ClientRegisterDTO("user1", "user1", user.getPhoneNumber());
-//        assertThrows(ConflictException.class, () -> authService.registerClient(registerDTO));
-//    }
-
-//    @Test
-//    @Transactional
-//    void shouldNotRegisterWithoutDefaultClientRole() {
-//        roleRepository.deleteAll();
-//        ClientRegisterDTO registerDTO = new ClientRegisterDTO("user1", "user1", "+998961001010");
-//        assertThrows(NotFoundException.class, () -> authService.registerClient(registerDTO));
-//    }
-//
-//    @Test
-//    @Transactional
-//    void shouldLoginClient() {
-//        user.setPassword(passwordEncoder.encode("1212"));
-//        user.setCodeValidTill(LocalDateTime.now().plusMinutes(5));
-//        userRepository.saveAndFlush(user);
-//        ClientLoginDTO clientLoginDTO = new ClientLoginDTO(user.getPhoneNumber(), "1212");
-//        ApiResult<TokenDTO> login = authService.loginOrRegisterClient(clientLoginDTO);
-//        assertTrue(login.isSuccess());
-//        TokenDTO data = login.getData();
-//        assertNotNull(data.getAccessToken());
-//        assertNotNull(data.getRefreshToken());
-//    }
 
     @Test
     @Transactional

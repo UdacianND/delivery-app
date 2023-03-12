@@ -11,6 +11,7 @@ import uz.md.shopapp.dtos.category.CategoryDTO;
 import uz.md.shopapp.dtos.category.CategoryEditDTO;
 import uz.md.shopapp.dtos.category.CategoryInfoDTO;
 import uz.md.shopapp.exceptions.AlreadyExistsException;
+import uz.md.shopapp.exceptions.BadRequestException;
 import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.CategoryMapper;
@@ -43,7 +44,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ApiResult<CategoryDTO> add(CategoryAddDTO dto) {
 
+        if (dto == null || dto.getNameUz() == null
+                || dto.getNameRu() == null
+                || dto.getInstitutionId() == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xato bor")
+                    .messageRu("")
+                    .build();
+
         User currentUser = getCurrentUser();
+
+
         Institution institution = institutionRepository
                 .findById(dto.getInstitutionId())
                 .orElseThrow(() -> NotFoundException.builder()
@@ -64,6 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
                     .messageUz("Kategoriya nomi allaqachon mavjud")
                     .messageRu("")
                     .build();
+
         Category category = categoryMapper
                 .fromAddDTO(dto);
         category.setInstitution(institution);
@@ -76,6 +88,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ApiResult<CategoryDTO> findById(Long id) {
+
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xato bor")
+                    .messageRu("")
+                    .build();
+
         return ApiResult.successResponse(categoryMapper
                 .toDTO(categoryRepository
                         .findById(id)
@@ -87,6 +106,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ApiResult<CategoryDTO> edit(CategoryEditDTO editDTO) {
+
+        if (editDTO == null || editDTO.getNameRu() == null
+                || editDTO.getNameUz() == null
+                || editDTO.getInstitutionId() == null || editDTO.getId() == null)
+            throw BadRequestException.builder()
+                    .messageUz("So'rovda xato bor")
+                    .messageRu("")
+                    .build();
 
         User currentUser = getCurrentUser();
         Institution institution = institutionRepository
@@ -111,7 +138,8 @@ public class CategoryServiceImpl implements CategoryService {
                         .messageRu("")
                         .build());
 
-        if (categoryRepository.existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), editing.getId()))
+        if (categoryRepository
+                .existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), editing.getId()))
             throw AlreadyExistsException.builder()
                     .messageUz("Kategoriya nomi allaqachon mavjud")
                     .messageRu("")
@@ -125,12 +153,17 @@ public class CategoryServiceImpl implements CategoryService {
 
     private User getCurrentUser() {
         String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-        return userRepository
-                .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
-                        .messageRu("")
-                        .build());
+        if (phoneNumber != null)
+            return userRepository
+                    .findByPhoneNumber(phoneNumber)
+                    .orElseThrow(() -> NotFoundException.builder()
+                            .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
+                            .messageRu("")
+                            .build());
+        throw  NotFoundException.builder()
+                .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
+                .messageRu("")
+                .build();
     }
 
     @Override
@@ -150,12 +183,26 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ApiResult<List<CategoryInfoDTO>> getAllByInstitutionId(Long id) {
+
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz("Id bo'sh bo'lishi mumkin emas")
+                    .messageRu("")
+                    .build();
+
         return ApiResult.successResponse(categoryRepository
                 .findAllForInfoByInstitutionId(id));
     }
 
     @Override
     public ApiResult<List<CategoryInfoDTO>> getAllByInstitutionIdAndPage(Long id, String page) {
+
+        if (page == null || id == null)
+            throw BadRequestException.builder()
+                    .messageUz("Id yoki sahifa bo'sh bo'lishi mumkin emas")
+                    .messageRu("")
+                    .build();
+
         int[] paged = {Integer.parseInt(page.split("-")[0]),
                 Integer.parseInt(page.split("-")[1])};
         return ApiResult.successResponse(categoryMapper
@@ -166,6 +213,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ApiResult<Void> delete(Long id) {
+
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz("Id bo'sh bo'lishi mumkin emas")
+                    .messageRu("")
+                    .build();
 
         if (!categoryRepository.existsById(id))
             throw NotFoundException.builder()

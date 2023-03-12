@@ -2,6 +2,7 @@ package uz.md.shopapp.dtos.category;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
@@ -19,6 +20,8 @@ public class CategoryAddDTO {
 
     private String descriptionUz;
     private String descriptionRu;
+
+    @NotNull(message = "Kategoriya muassasa idsi bolishi shart")
     private Long institutionId;
 
 }
