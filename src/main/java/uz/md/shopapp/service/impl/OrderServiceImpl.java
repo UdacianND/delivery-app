@@ -130,6 +130,8 @@ public class OrderServiceImpl implements OrderService {
                         .build());
 
         order.setInstitution(institution);
+        order.setDeliveryPrice(25000L);
+        order.setOverallPrice(0L);
         orderRepository.save(order);
         List<OrderProduct> orderProducts = new ArrayList<>();
 
@@ -151,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
 
         Long overallPrice = sumOrderOverallPrice(orderProducts);
         order.setOverallPrice(overallPrice);
-        order.setDeliveryPrice(25000L);
+
         order.setOrderProducts(orderProducts);
 
         orderRepository.save(order);
