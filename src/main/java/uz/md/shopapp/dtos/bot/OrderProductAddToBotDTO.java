@@ -14,5 +14,5 @@ public class OrderProductAddToBotDTO {
     @NotNull(message = "ordered product count can not be null ")
     private int quantity;
     @NotNull(message = "ordered product price can not be null ")
-    private double price;
+    private Long price;
 }

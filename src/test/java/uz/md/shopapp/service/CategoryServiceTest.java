@@ -300,6 +300,7 @@ public class CategoryServiceTest {
                         "another",
                         "",
                         "",
+                        "https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         new Location(12.0, 12.0),
                         institutionType,
                         manager));
@@ -333,6 +334,7 @@ public class CategoryServiceTest {
                         "another",
                         "",
                         "",
+                        "https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locationRepository
                                 .saveAndFlush(new Location(15.0, 18.0)),
                         institutionType,
@@ -368,6 +370,7 @@ public class CategoryServiceTest {
                         "another",
                         "",
                         "",
+                        "https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locationRepository
                                 .saveAndFlush(new Location(15.0, 18.0)),
                         institutionType,

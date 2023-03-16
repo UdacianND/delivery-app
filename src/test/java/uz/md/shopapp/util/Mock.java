@@ -75,7 +75,7 @@ public class Mock {
 
     public static Product getProduct(Category category) {
         Random random = new Random();
-        double price = random.nextDouble() * 300 + 200;
+        long price = random.nextLong() * 300 + 200;
         int v = random.nextInt(5)+1;
         Product product = new Product();
         product.setNameUz("Plov " + v);

@@ -23,5 +23,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Long countAllByUser_IdAndDeletedIsFalse(Long user_id);
 
-    void deleteByUserId(Long id);
+    void deleteAllByUserId(Long id);
 }

@@ -43,11 +43,12 @@ public class Institution extends AbsLongEntity {
     @JoinColumn(nullable = false)
     private User manager;
 
-    public Institution(String nameUz, String nameRu, String descriptionUz, String descriptionRu, Location location, InstitutionType type, User manager) {
+    public Institution(String nameUz, String nameRu, String descriptionUz, String descriptionRu, String imageUrl, Location location, InstitutionType type, User manager) {
         this.nameUz = nameUz;
         this.nameRu = nameRu;
         this.descriptionUz = descriptionUz;
         this.descriptionRu = descriptionRu;
+        this.imageUrl = imageUrl;
         this.location = location;
         this.type = type;
         this.manager = manager;

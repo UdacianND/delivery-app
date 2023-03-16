@@ -153,7 +153,6 @@ public class OrderServiceImpl implements OrderService {
 
         Long overallPrice = sumOrderOverallPrice(orderProducts);
         order.setOverallPrice(overallPrice);
-
         order.setOrderProducts(orderProducts);
 
         orderRepository.save(order);

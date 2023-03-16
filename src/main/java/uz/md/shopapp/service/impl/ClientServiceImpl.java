@@ -2,6 +2,7 @@ package uz.md.shopapp.service.impl;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.md.shopapp.domain.Address;
 import uz.md.shopapp.domain.User;
 import uz.md.shopapp.dtos.ApiResult;
@@ -26,6 +27,7 @@ import java.util.List;
 import static uz.md.shopapp.utils.MessageConstants.*;
 
 @Service
+@Transactional
 public class ClientServiceImpl implements ClientService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -92,7 +94,7 @@ public class ClientServiceImpl implements ClientService {
                     .messageUz("Siz client emassiz")
                     .messageRu("")
                     .build();
-        orderRepository.deleteByUserId(user.getId());
+        orderRepository.deleteAllByUserId(user.getId());
         return ApiResult.successResponse();
     }
 
