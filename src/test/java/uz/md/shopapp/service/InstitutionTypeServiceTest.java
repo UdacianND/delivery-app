@@ -37,6 +37,7 @@ public class InstitutionTypeServiceTest {
 
     @Autowired
     private InstitutionTypeService institutionTypeService;
+
     @Autowired
     private InstitutionTypeRepository institutionTypeRepository;
 

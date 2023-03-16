@@ -36,6 +36,7 @@ public class Institution extends AbsLongEntity {
     private InstitutionType type;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "institution")
+    @ToString.Exclude
     private List<Category> categories;
 
     @OneToOne
@@ -47,6 +48,7 @@ public class Institution extends AbsLongEntity {
         this.nameRu = nameRu;
         this.descriptionUz = descriptionUz;
         this.descriptionRu = descriptionRu;
+        this.imageUrl = imageUrl;
         this.location = location;
         this.type = type;
         this.manager = manager;

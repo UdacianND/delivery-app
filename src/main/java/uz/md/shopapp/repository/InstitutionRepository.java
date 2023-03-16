@@ -10,6 +10,7 @@ import uz.md.shopapp.dtos.institution.InstitutionInfoDTO;
 import java.util.List;
 
 public interface InstitutionRepository extends JpaRepository<Institution, Long> {
+
     boolean existsByNameUzOrNameRu(String nameUz, String nameRu);
 
     boolean existsByNameUzOrNameRuAndIdIsNot(String nameUz, String nameRu, Long id);

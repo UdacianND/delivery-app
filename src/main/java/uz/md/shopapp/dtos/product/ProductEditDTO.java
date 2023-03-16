@@ -22,7 +22,7 @@ public class ProductEditDTO extends ProductAddDTO {
                           @NotBlank(message = "Product name must not be empty") String nameRu,
                           String descriptionUz,
                           String descriptionRu,
-                          @NotNull(message = "Product price must not be null") Double price,
+                          @NotNull(message = "Product price must not be null") Long price,
                           @NotNull(message = "Product category must not be null") Long categoryId,
                           Long id) {
         super(nameUz, nameRu, descriptionUz, descriptionRu, price, categoryId);

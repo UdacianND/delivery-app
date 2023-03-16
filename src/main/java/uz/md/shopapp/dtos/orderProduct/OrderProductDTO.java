@@ -1,5 +1,6 @@
 package uz.md.shopapp.dtos.orderProduct;
 
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.*;
 import uz.md.shopapp.dtos.product.ProductDTO;
 
@@ -12,6 +13,6 @@ public class OrderProductDTO {
     private Long id;
     private Long orderId;
     private ProductDTO product;
-    private int quantity;
-    private double price;
+    private Integer quantity;
+    private Long price;
 }

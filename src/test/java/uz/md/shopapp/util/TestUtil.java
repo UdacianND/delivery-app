@@ -122,7 +122,7 @@ public final class TestUtil {
                     "nameRu" + (i + 1),
                     "description",
                     "description",
-                    "",
+                    "https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                     Location.builder()
                             .latitude(15.0)
                             .longitude(15.0)
@@ -136,7 +136,7 @@ public final class TestUtil {
     public static List<Product> generateMockProducts(int count, Category category) {
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            products.add(new Product("nameUz" + (i + 1), "nameRu" + (i + 1), null, "description", "description", ((i + 1) * 100.0), category));
+            products.add(new Product("nameUz" + (i + 1), "nameRu" + (i + 1), null, "description", "description", ((i + 1) * 100L), category));
         }
         return products;
     }

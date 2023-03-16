@@ -8,9 +8,9 @@ import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
-import uz.md.shopapp.dtos.bot.OrderSendToBotDto;
+import uz.md.shopapp.dtos.bot.OrderSendToBotDTO;
 import uz.md.shopapp.dtos.institution.LocationDto;
-import uz.md.shopapp.service.contract.TelegrambotService;
+import uz.md.shopapp.service.contract.TelegramBotService;
 
 import java.util.List;
 
@@ -18,9 +18,10 @@ import static uz.md.shopapp.utils.AppConstants.*;
 
 @Service
 @RequiredArgsConstructor
-public class TelegrambotServiceImp implements TelegrambotService {
+public class TelegramBotServiceImp implements TelegramBotService {
 
     private final RestTemplate restTemplate;
+
     @Override
     public void sendBotWebApp(Long chatId) {
         SendMessage webAppLink = getWebAppLink(chatId);
@@ -28,15 +29,27 @@ public class TelegrambotServiceImp implements TelegrambotService {
     }
 
     @Override
-    public void sendOrderToGroup(OrderSendToBotDto order) {
-        SendMessage orderInfo = getOrderInfo(order);
+    public void sendOrderToGroup(OrderSendToBotDTO order) {
+
+        SendMessage orderInfo = getOrderInfo(order, GROUP_CHAT_ID);
         LocationDto locationDto = order.getLocation();
         Location location = new Location();
         location.setLatitude(locationDto.getLatitude());
         location.setLongitude(locationDto.getLongitude());
 
         restTemplate.postForObject(TELEGRAM_SEND_MESSAGE_URL, orderInfo, Object.class);
-        restTemplate.postForObject(TELEGRAM_SEND_LOCATION_URL, location, Object.class);
+        orderInfo.setChatId(order.getManagerChatId());
+        restTemplate.postForObject(TELEGRAM_SEND_MESSAGE_URL, orderInfo, Object.class);
+        restTemplate.postForObject(TELEGRAM_SEND_LOCATION_URL + GROUP_CHAT_ID, location, Object.class);
+        restTemplate.postForObject(TELEGRAM_SEND_LOCATION_URL + order.getManagerChatId(), location, Object.class);
+    }
+
+    @Override
+    public void sendChatId(Long chatId) {
+        SendMessage message = new SendMessage();
+        message.setText(chatId.toString());
+        message.setChatId(chatId);
+        restTemplate.postForObject(TELEGRAM_SEND_MESSAGE_URL, message, Object.class);
     }
 
     private SendMessage getWebAppLink(Long chatId){
@@ -53,22 +66,24 @@ public class TelegrambotServiceImp implements TelegrambotService {
         return sendMessage;
     }
 
-    private SendMessage getOrderInfo(OrderSendToBotDto order){
+    private SendMessage getOrderInfo(OrderSendToBotDTO order, String chatId){
         StringBuilder orderMessage = new StringBuilder();
-        orderMessage.append("=========BUYURTMA=========\n\n");
-        orderMessage.append("MAHSULOTLAR : \n\n");
+        orderMessage.append("========= BUYURTMA =========\n\n");
+        orderMessage.append("****").append(order.getInstitutionName())
+                .append("****");
+        orderMessage.append(" MAHSULOTLAR : \n\n");
         order.getOrderProducts().forEach(product -> {
             orderMessage.append(product.getName())
-                    .append("---").append(product.getCount()).append("X")
-                    .append("---").append(product.getPrice()).append(" so'm")
-                    .append("---").append(product.getInstitutionName())
-                    .append("\n.........................................\n");
+                    .append(" --- ").append(product.getQuantity()).append("X")
+                    .append(" --- ").append(product.getPrice()).append(" so'm")
+                    .append("\n ......................................... \n");
         });
-        orderMessage.append("\n\n HAMMASI : ").append(order.getTotalPrice()).append(" So'm")
+        orderMessage.append("\n\n HAMMASI : ").append(order.getOverallPrice()).append(" So'm")
                 .append("\n Mijoz raqami : ").append(order.getClientPhoneNumber())
-                .append("\n Yetkazib berish vaqti : ").append(order.getDeliveryTime());
+                .append("\n Yetkazib berish sanasi : ").append(order.getDeliveryTime().toLocalDate())
+                .append("\n Yetkazib berish vaqti : ").append(order.getDeliveryTime().toLocalTime());
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(GROUP_CHAT_ID);
+        sendMessage.setChatId(chatId);
         sendMessage.setText(orderMessage.toString());
         return sendMessage;
     }

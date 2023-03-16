@@ -23,7 +23,7 @@ public class ProductAddDTO {
     private String descriptionRu;
 
     @NotNull(message = "Product price must not be null")
-    private Double price;
+    private Long price;
 
     @NotNull(message = "Product category must not be null")
     private Long categoryId;

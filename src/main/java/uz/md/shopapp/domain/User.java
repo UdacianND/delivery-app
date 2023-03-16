@@ -56,6 +56,16 @@ public class User extends AbsLongEntity implements UserDetails {
         this.role = role;
     }
 
+    public User(String firstName, String lastName, String phoneNumber, String password, Role role, Long chatId) {
+        super.setActive(true);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.role = role;
+        this.chatId = chatId;
+    }
+
     public User(String firstName, String lastName, String phoneNumber, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;

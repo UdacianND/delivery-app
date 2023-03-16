@@ -23,6 +23,9 @@ import uz.md.shopapp.utils.CommonUtils;
 
 import java.util.List;
 
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_RU;
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_UZ;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -48,36 +51,36 @@ public class CategoryServiceImpl implements CategoryService {
                 || dto.getNameRu() == null
                 || dto.getInstitutionId() == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xato bor")
-                    .messageRu("")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         User currentUser = getCurrentUser();
-
 
         Institution institution = institutionRepository
                 .findById(dto.getInstitutionId())
                 .orElseThrow(() -> NotFoundException.builder()
                         .messageUz("Muassasa topilmadi")
-                        .messageRu("")
+                        .messageRu("Объект не найден")
                         .build());
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!institution.getManager().getId().equals(currentUser.getId()))
                 throw NotAllowedException.builder()
                         .messageUz("Sizda ruxsat yo'q")
-                        .messageRu("")
+                        .messageRu("У вас нет разрешения")
                         .build();
 
         if (categoryRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()) ||
                 categoryRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
             throw AlreadyExistsException.builder()
                     .messageUz("Kategoriya nomi allaqachon mavjud")
-                    .messageRu("")
+                    .messageRu("Название категории уже существует")
                     .build();
 
         Category category = categoryMapper
                 .fromAddDTO(dto);
+
         category.setInstitution(institution);
 
         return ApiResult
@@ -91,8 +94,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (id == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xato bor")
-                    .messageRu("")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         return ApiResult.successResponse(categoryMapper
@@ -100,7 +103,7 @@ public class CategoryServiceImpl implements CategoryService {
                         .findById(id)
                         .orElseThrow(() -> NotFoundException.builder()
                                 .messageUz("Kategoriya topilmadi")
-                                .messageRu("")
+                                .messageRu("Категория не найдена")
                                 .build())));
     }
 
@@ -111,8 +114,8 @@ public class CategoryServiceImpl implements CategoryService {
                 || editDTO.getNameUz() == null
                 || editDTO.getInstitutionId() == null || editDTO.getId() == null)
             throw BadRequestException.builder()
-                    .messageUz("So'rovda xato bor")
-                    .messageRu("")
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
         User currentUser = getCurrentUser();
@@ -120,7 +123,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .findById(editDTO.getInstitutionId())
                 .orElseThrow(() -> NotFoundException.builder()
                         .messageUz("Muassasa topilmadi")
-                        .messageRu("")
+                        .messageRu("Объект не найден")
                         .build());
 
         if (!currentUser.getRole().getName().equals("ADMIN"))
@@ -128,21 +131,21 @@ public class CategoryServiceImpl implements CategoryService {
                 throw NotAllowedException
                         .builder()
                         .messageUz("Sizda ruxsat yo'q")
-                        .messageRu("")
+                        .messageRu("У вас нет разрешения")
                         .build();
 
         Category editing = categoryRepository
                 .findById(editDTO.getId())
                 .orElseThrow(() -> NotFoundException.builder()
                         .messageUz("Kategoriya topilmadi")
-                        .messageRu("")
+                        .messageRu("Категория не найдена")
                         .build());
 
         if (categoryRepository
                 .existsByNameUzOrNameRuAndIdIsNot(editDTO.getNameUz(), editDTO.getNameRu(), editing.getId()))
             throw AlreadyExistsException.builder()
                     .messageUz("Kategoriya nomi allaqachon mavjud")
-                    .messageRu("")
+                    .messageRu("Название категории уже существует")
                     .build();
 
         Category category = categoryMapper.fromEditDTO(editDTO, editing);
@@ -158,11 +161,11 @@ public class CategoryServiceImpl implements CategoryService {
                     .findByPhoneNumber(phoneNumber)
                     .orElseThrow(() -> NotFoundException.builder()
                             .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
-                            .messageRu("")
+                            .messageRu("Этот цифровой Пользователь не найден")
                             .build());
-        throw  NotFoundException.builder()
+        throw NotFoundException.builder()
                 .messageUz("Ushbu raqamli Foydalanuvchi topilmadi")
-                .messageRu("")
+                .messageRu("Этот цифровой Пользователь не найден")
                 .build();
     }
 
@@ -187,7 +190,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (id == null)
             throw BadRequestException.builder()
                     .messageUz("Id bo'sh bo'lishi mumkin emas")
-                    .messageRu("")
+                    .messageRu("Идентификатор не может быть пустым")
                     .build();
 
         return ApiResult.successResponse(categoryRepository
@@ -200,7 +203,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (page == null || id == null)
             throw BadRequestException.builder()
                     .messageUz("Id yoki sahifa bo'sh bo'lishi mumkin emas")
-                    .messageRu("")
+                    .messageRu("Идентификатор или страница не могут быть пустыми")
                     .build();
 
         int[] paged = {Integer.parseInt(page.split("-")[0]),
@@ -217,13 +220,13 @@ public class CategoryServiceImpl implements CategoryService {
         if (id == null)
             throw BadRequestException.builder()
                     .messageUz("Id bo'sh bo'lishi mumkin emas")
-                    .messageRu("")
+                    .messageRu("Идентификатор не может быть пустым")
                     .build();
 
         if (!categoryRepository.existsById(id))
             throw NotFoundException.builder()
-                    .messageUz("CATEGORY_NOT_FOUND")
-                    .messageRu("")
+                    .messageUz("Kategoriya topilmadi")
+                    .messageRu("категория не найдена")
                     .build();
         Long managerId = categoryRepository.findMangerIdByCategoryId(id);
         User currentUser = getCurrentUser();
@@ -231,8 +234,8 @@ public class CategoryServiceImpl implements CategoryService {
         if (!currentUser.getRole().getName().equals("ADMIN"))
             if (!currentUser.getId().equals(managerId))
                 throw NotAllowedException.builder()
-                        .messageUz("YOU HAVE NO PERMISSION")
-                        .messageRu("")
+                        .messageUz("Sizda ruxsat yo'q")
+                        .messageRu("У вас нет разрешения")
                         .build();
 
         categoryRepository.deleteById(id);

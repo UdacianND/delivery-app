@@ -2,6 +2,7 @@ package uz.md.shopapp.dtos.institution;
 
 import lombok.*;
 import uz.md.shopapp.dtos.category.CategoryDTO;
+import uz.md.shopapp.dtos.user.ManagerDTO;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class InstitutionDTO {
     private String descriptionRu;
     private Long institutionTypeId;
     private List<CategoryDTO> categories;
+    private ManagerDTO manager;
 
     public InstitutionDTO(Long id,
                           String nameUz,

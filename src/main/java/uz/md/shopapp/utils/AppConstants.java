@@ -31,6 +31,7 @@ public interface AppConstants {
             CategoryController.BASE_URL+"/institution/*",
             CategoryController.BASE_URL+"/institution/*/by-page/*",
             AuthController.BASE_URL + "/**",
+            TelegrambotController.BASE_URL,
             TelegrambotController.BASE_URL + "/**"
     };
 
@@ -74,8 +75,10 @@ public interface AppConstants {
     String TELEGRAM_BOT_FULL_URL = TELEGRAM_BASE_URL.concat(BOT_TOKEN);
     String TELEGRAM_SEND_MESSAGE_URL = TELEGRAM_BOT_FULL_URL + "/sendMessage";
     String GROUP_CHAT_ID = "@delivery_channel";
-    String TELEGRAM_SEND_LOCATION_URL = TELEGRAM_BOT_FULL_URL + "/sendLocation?chat_id="+GROUP_CHAT_ID ;
+    String TELEGRAM_SEND_LOCATION_URL = TELEGRAM_BOT_FULL_URL + "/sendLocation?chat_id=" ;
 
     String BOT_STARTER_MESSAGE = "Salom, ushbu havolani oching";
+
+    String GET_CHAT_ID_CMD = "/chat_id";
 
 }

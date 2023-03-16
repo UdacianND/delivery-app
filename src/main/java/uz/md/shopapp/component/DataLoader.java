@@ -94,11 +94,13 @@ public class DataLoader implements CommandLineRunner {
             addAdmin();
             saveManagerRole();
             saveClientRole();
-            initLocations();
-            initInstitutionTypes();
-            initInstitutions();
-            initCategories();
-            initProducts();
+            if (!activeProfile.equals("test")) {
+                initLocations();
+                initInstitutionTypes();
+                initInstitutions();
+                initCategories();
+                initProducts();
+            }
         }
     }
 
@@ -120,7 +122,7 @@ public class DataLoader implements CommandLineRunner {
                         "https://th.bing.com/th/id/OIP.dNCYKENMQT0e6qVY3uzTzQHaE7?pid=ImgDet&rs=1",
                         "description",
                         "description",
-                        Math.round(random.nextDouble() * 500) + 100.0,
+                        (long) (Math.round(random.nextLong(100000) * 500) + 100),
                         categoryRepository.findById(i + 1L).orElseThrow()
                 ));
             }
@@ -144,7 +146,7 @@ public class DataLoader implements CommandLineRunner {
     private void initInstitutions() {
         List<Location> locations = locationRepository.findAll();
         institutionRepository.saveAll(List.of(
-                new Institution("Max Way", "Max Way", "", "", "https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
+                new Institution("Max Way", "Max Way", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locations.get(0),
                         institutionTypeRepository.findById(1L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
@@ -212,8 +214,8 @@ public class DataLoader implements CommandLineRunner {
                 lastName,
                 phoneNumber,
                 passwordEncoder.encode(password),
-                addAdminRole()
-        ));
+                addAdminRole(),
+                1345758544L));
     }
 
     private @NotNull Role addAdminRole() {

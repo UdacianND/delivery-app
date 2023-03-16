@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import uz.md.shopapp.service.contract.TelegrambotService;
+import uz.md.shopapp.service.contract.TelegramBotService;
 import uz.md.shopapp.utils.AppConstants;
 
-import static uz.md.shopapp.utils.AppConstants.*;
+import static uz.md.shopapp.utils.AppConstants.GET_CHAT_ID_CMD;
 
 @RestController
 @RequestMapping(TelegrambotController.BASE_URL)
@@ -21,15 +21,18 @@ import static uz.md.shopapp.utils.AppConstants.*;
 @Slf4j
 public class TelegrambotController {
     public static final String BASE_URL = AppConstants.BASE_URL + "telegrambot";
-    private final TelegrambotService telegrambotService;
+    private final TelegramBotService telegrambotService;
 
     @PostMapping
-    public void getUpdates(@RequestBody Update update){
+    public void getUpdates(@RequestBody Update update) {
         Message message = update.getMessage();
-        if(message == null || !message.isUserMessage())
+        if (message == null || !message.isUserMessage())
             return;
         Long chatId = message.getChatId();
-        telegrambotService.sendBotWebApp(chatId);
+        if(message.getText().equals(GET_CHAT_ID_CMD))
+            telegrambotService.sendChatId(chatId);
+        else
+            telegrambotService.sendBotWebApp(chatId);
     }
 }
 

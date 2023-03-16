@@ -44,6 +44,12 @@ public class ClientController {
         return clientService.getMyOrders(page);
     }
 
+    @GetMapping("/my-orders/clear")
+    @Operation(description = "Getting client orders")
+    public ApiResult<Void> clearClientOrders() {
+        return clientService.deleteMyOrders();
+    }
+
     @GetMapping("/my-addresses")
     @Operation(description = "Getting client addresses")
     public ApiResult<List<AddressDTO>> getClientAddresses() {

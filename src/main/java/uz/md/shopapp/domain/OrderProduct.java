@@ -3,6 +3,7 @@ package uz.md.shopapp.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
+import uz.md.shopapp.domain.template.AbsLongEntity;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,11 +14,7 @@ import org.hibernate.annotations.Where;
 @Table
 @Builder
 @Where(clause = "deleted = false")
-public class OrderProduct {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class OrderProduct extends AbsLongEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -29,7 +26,7 @@ public class OrderProduct {
     @Column(nullable = false)
     private Integer quantity;
     @Column(nullable = false)
-    private Double price;
+    private Long price;
 
     @Override
     public boolean equals(Object o) {

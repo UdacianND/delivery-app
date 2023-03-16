@@ -50,8 +50,10 @@ app:
       name: "CLIENT"
       description: "System client"
   sms:
+    sender-email: "yusupovforwin@gmail.com"
+    sender-password: "Zy8QqFHSece407D1oe9cacBIOSpVWl3tF47TMMnF"
     valid_till: 15
-    valid_till_in: MINUTES
+    valid_till_in: "MINUTES"
   images:
     institutions:
       root:

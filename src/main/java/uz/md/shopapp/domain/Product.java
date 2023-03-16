@@ -30,7 +30,7 @@ public class Product extends AbsLongEntity {
     private String descriptionRu;
 
     @Column(nullable = false)
-    private Double price;
+    private Long price;
 
     @ManyToOne
     @JoinColumn(nullable = false)

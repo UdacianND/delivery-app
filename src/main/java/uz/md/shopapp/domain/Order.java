@@ -41,10 +41,13 @@ public class Order extends AbsLongEntity {
     private LocalDateTime deliveryTime;
 
     @Column(nullable = false)
-    private Double deliveryPrice;
+    private Long deliveryPrice;
 
     @Column(nullable = false)
-    private Double overallPrice;
+    private Long overallPrice;
+
+    @ManyToOne
+    private Institution institution;
 
 
     @Override

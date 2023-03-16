@@ -16,6 +16,7 @@ import uz.md.shopapp.dtos.product.ProductEditDTO;
 import uz.md.shopapp.dtos.request.SimpleSearchRequest;
 import uz.md.shopapp.dtos.request.SimpleSortRequest;
 import uz.md.shopapp.exceptions.AlreadyExistsException;
+import uz.md.shopapp.exceptions.BadRequestException;
 import uz.md.shopapp.exceptions.NotAllowedException;
 import uz.md.shopapp.exceptions.NotFoundException;
 import uz.md.shopapp.mapper.ProductMapper;
@@ -29,6 +30,9 @@ import uz.md.shopapp.utils.CommonUtils;
 
 import java.nio.file.Path;
 import java.util.List;
+
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_RU;
+import static uz.md.shopapp.utils.MessageConstants.ERROR_IN_REQUEST_UZ;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +56,11 @@ public class ProductServiceImpl implements ProductService {
     private final UserRepository userRepository;
 
     private Product getById(Long id) {
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
         return productRepository
                 .findById(id)
                 .orElseThrow(() -> {
@@ -65,6 +74,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ApiResult<ProductDTO> findById(Long id) {
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
         Product byId = getById(id);
         return ApiResult.successResponse(
                 productMapper.toDTO(byId));
@@ -73,24 +87,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ApiResult<ProductDTO> add(ProductAddDTO dto) {
 
-        Long managerId = categoryRepository.findMangerIdByCategoryId(dto.getCategoryId());
-
-        if (managerId == null)
-            throw NotFoundException.builder()
-                    .messageRu("")
-                    .messageUz("PRODUCT_OR_ITS_CATEGORY_NOT_FOUND")
+        if (dto == null
+                || dto.getNameUz() == null
+                || dto.getNameRu() == null
+                || dto.getPrice() == null
+                || dto.getCategoryId() == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
-
-        User currentUser = getCurrentUser();
-
-        if (!currentUser.getRole().getName().equals("ADMIN"))
-            if (!currentUser.getId().equals(managerId))
-                throw NotAllowedException.builder()
-                        .messageRu("")
-                        .messageUz("YOU HAVE NO PERMISSION")
-                        .build();
-
+        checkForPermission(dto);
 
         if (productRepository.existsByNameUzOrNameRu(dto.getNameUz(), dto.getNameRu()))
             throw AlreadyExistsException.builder()
@@ -114,21 +121,12 @@ public class ProductServiceImpl implements ProductService {
                                 .save(product)));
     }
 
-    private User getCurrentUser() {
-        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
-        return userRepository
-                .findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> NotFoundException.builder()
-                        .messageUz("USER_NOT_FOUND")
-                        .messageRu("")
-                        .build());
+    private void checkForPermission(ProductAddDTO dto) {
+        Long managerId = categoryRepository.findMangerIdByCategoryId(dto.getCategoryId());
+        checkForPermission(managerId);
     }
 
-    @Override
-    public ApiResult<ProductDTO> edit(ProductEditDTO editDTO) {
-
-        Long managerId = categoryRepository.findMangerIdByCategoryId(editDTO.getCategoryId());
-
+    private void checkForPermission(Long managerId) {
         if (managerId == null)
             throw NotFoundException.builder()
                     .messageRu("")
@@ -144,7 +142,33 @@ public class ProductServiceImpl implements ProductService {
                         .messageRu("")
                         .messageUz("YOU HAVE NO PERMISSION")
                         .build();
+    }
 
+    private User getCurrentUser() {
+        String phoneNumber = CommonUtils.getCurrentUserPhoneNumber();
+        return userRepository
+                .findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> NotFoundException.builder()
+                        .messageUz("USER_NOT_FOUND")
+                        .messageRu("")
+                        .build());
+    }
+
+    @Override
+    public ApiResult<ProductDTO> edit(ProductEditDTO editDTO) {
+
+        if (editDTO == null
+                || editDTO.getId() == null
+                || editDTO.getNameUz() == null
+                || editDTO.getNameRu() == null
+                || editDTO.getCategoryId() == null
+                || editDTO.getPrice() == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
+
+        checkForPermission(editDTO);
 
         Product product = productRepository
                 .findById(editDTO.getId())
@@ -179,24 +203,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ApiResult<Void> delete(Long id) {
 
-        Long managerId = productRepository.findMangerIdById(id);
-
-        if (managerId == null)
-            throw NotFoundException.builder()
-                    .messageRu("")
-                    .messageUz("PRODUCT_OR_ITS_CATEGORY_NOT_FOUND")
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
                     .build();
 
+        Long managerId = productRepository.findMangerIdById(id);
 
-        User currentUser = getCurrentUser();
-
-        if (!currentUser.getRole().getName().equals("ADMIN"))
-            if (!currentUser.getId().equals(managerId))
-                throw NotAllowedException.builder()
-                        .messageRu("")
-                        .messageUz("YOU HAVE NO PERMISSION")
-                        .build();
-
+        checkForPermission(managerId);
 
         if (!productRepository.existsById(id))
             throw NotFoundException.builder()
@@ -210,6 +225,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ApiResult<List<ProductDTO>> getAllByCategory(Long id) {
+
+        if (id == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
+
         if (!categoryRepository.existsById(id))
             throw NotFoundException.builder()
                     .messageRu("")
@@ -225,6 +247,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ApiResult<List<ProductDTO>> findAllBySimpleSearch(SimpleSearchRequest request) {
 
+        if (request == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
+
         TypedQuery<Product> productTypedQuery = queryService
                 .generateSimpleSearchQuery(Product.class, request);
 
@@ -235,6 +263,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ApiResult<List<ProductDTO>> findAllBySort(SimpleSortRequest request) {
+
+        if (request == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
+
         TypedQuery<Product> productTypedQuery = queryService
                 .generateSimpleSortQuery(Product.class, request);
 
@@ -245,6 +280,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ApiResult<Void> setImage(Long productId, MultipartFile image) {
+
+        if (productId == null || image == null)
+            throw BadRequestException.builder()
+                    .messageUz(ERROR_IN_REQUEST_UZ)
+                    .messageRu(ERROR_IN_REQUEST_RU)
+                    .build();
+
         Product product = productRepository
                 .findById(productId)
                 .orElseThrow(() -> NotFoundException.builder()
