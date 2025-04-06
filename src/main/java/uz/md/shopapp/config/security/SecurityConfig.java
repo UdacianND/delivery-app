@@ -43,7 +43,8 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(InstitutionTypeController.BASE_URL+"/**").permitAll()
+//                        .requestMatchers(InstitutionTypeController.BASE_URL+"/**").permitAll()
+//                        .requestMatchers(InstitutionTypeController.BASE_URL).permitAll()
                         .requestMatchers(AppConstants.OPEN_PAGES).permitAll()
                         .requestMatchers(AppConstants.SWAGGER_PAGES).permitAll()
                         .anyRequest().authenticated())

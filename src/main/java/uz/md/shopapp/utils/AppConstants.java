@@ -18,6 +18,7 @@ public interface AppConstants {
 
     String[] OPEN_PAGES = {
             InstitutionTypeController.BASE_URL+"/*",
+            InstitutionTypeController.BASE_URL,
             InstitutionController.BASE_URL,
             InstitutionController.BASE_URL+"/all",
             InstitutionController.BASE_URL+"/by-page/*",
@@ -70,8 +71,8 @@ public interface AppConstants {
     *Telegram bot constants
      */
     String TELEGRAM_BASE_URL = "https://api.telegram.org/bot";
-    String TELEGRAM_BOT_WEBAPP_URL = "https://master--melodic-meerkat-622f75.netlify.app/";
-    String BOT_TOKEN = "6197877428:AAF1jOddZ97jKfyQ-dFqAi_tMV5o8yLtMbk";
+    String TELEGRAM_BOT_WEBAPP_URL = "https://myfrontapp.netlify.app/";
+    String BOT_TOKEN = "7885096181:AAHBr3wUs7qPNEocrycTmBrjNRgWZABatf4";
     String TELEGRAM_BOT_FULL_URL = TELEGRAM_BASE_URL.concat(BOT_TOKEN);
     String TELEGRAM_SEND_MESSAGE_URL = TELEGRAM_BOT_FULL_URL + "/sendMessage";
     String GROUP_CHAT_ID = "@delivery_channel";

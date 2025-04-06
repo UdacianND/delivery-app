@@ -83,6 +83,9 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        long count = userRepository.count();
+        if(count>0)
+            return;
         filesStorageService.init();
         System.out.println("activeProfile = " + activeProfile);
         if (Objects.equals("create", modeType)) {
@@ -99,7 +102,6 @@ public class DataLoader implements CommandLineRunner {
                 initInstitutionTypes();
                 initInstitutions();
                 initCategories();
-                initProducts();
             }
         }
     }
@@ -111,34 +113,64 @@ public class DataLoader implements CommandLineRunner {
         locationRepository.saveAndFlush(new Location(87.0, 87.0));
     }
 
-    private void initProducts() {
-        Random random;
-        for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < 3; j++) {
-                random = new Random();
-                productRepository.save(new Product(
-                        "nameUz" + i + "-" + j,
-                        "NameRu" + i + "-" + j,
-                        "https://th.bing.com/th/id/OIP.dNCYKENMQT0e6qVY3uzTzQHaE7?pid=ImgDet&rs=1",
-                        "description",
-                        "description",
-                        (long) (Math.round(random.nextLong(100000) * 500) + 100),
-                        categoryRepository.findById(i + 1L).orElseThrow()
-                ));
-            }
-        }
-    }
-
     private void initCategories() {
+        Random random = new Random();
+        String[] categories = {"Burger", "Ichimliklar", "Pitsa", "Lavash"};
+        String[][] products = {
+                {"Big burger", "Pishloqli burger", "Kichik burger", "Double burger"},
+                {"Choy", "Coca-cola", "Pepsi", "Mirinda"},
+                {"Pepperoni", "Pishloqli", "Qazili", "Kolbasali"},
+                {"Mini lavash", "Standard", "Pishloqli lavash", "Tandir lavash"}
+        };
+
+        String[][] images = {
+                {
+                        "https://www.osieurope.com/wp-content/uploads/2022/05/My-project-1.jpg",
+                        "https://yukber.uz/image/cache/catalog/2019-08-12%2012.14.44-700x700.jpg",
+                        "https://yukber.uz/image/cache/catalog/photo_2022-05-31_15-22-37-700x700.jpg",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqAFf-fyomEryCt82DRzht57DLyPmsRwJo4g&s"
+                },
+                {
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTY8odp6o4NM_TTs7m1MIGWZWGUfZ4Ffjj0Cw&s",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTx16h574aPADTqUecK9HrhrviSWz5maolmUA&s",
+                        "https://m.media-amazon.com/images/I/91LnEhnul6L._SL1500_.jpg",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn0GvgdwqI63xYplflSULYPrJzZkAPR7sX1g&s"
+                },
+                {
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfMBWosyYPlVV0H3ARHU61az1GJkjzzkD6uw&s",
+                        "https://api.choparpizza.uz/storage/products/2023/11/02/Q9J9FxLJuawNj4yZFKSqSzMkC3tIVc9hG7R8KB2l.webp",
+                        "https://api.choparpizza.uz/storage/products/2022/03/03/2GRLwqqQb0h1YslPViBqoZLOl7SxroY0PLoxHJCn.webp",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHHYTfQS0jWmEbj4dFMSJ9lD2tjJQRDLXNrw&s"
+                },
+                {
+                        "https://yukber.uz/image/cache/catalog/kavash-700x700.jpg",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQey9eSr9IWxyNYduGL5beUQS5Xr8vOJgkQkw&s",
+                        "https://yukber.uz/image/cache/catalog/pishloqli%20lavash-700x700.jpg",
+                        "https://nafistaqvo.uz/wp-content/uploads/2024/11/lavash-tandir-300x300.png"}
+        };
+
         for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 3; j++) {
-                categoryRepository.save(new Category(
-                        "nameUz" + i + "-" + j,
-                        "NameRu" + i + "-" + j,
-                        "description",
-                        "description",
+            for (int j = 0; j < 4; j++) {
+                Category category = categoryRepository.save(new Category(
+                        categories[j],
+                        categories[j],
+                        categories[j],
+                        categories[j],
                         null,
                         institutionRepository.findById(i + 1L).orElseThrow()));
+                String[] productNames = products[j];
+                String[] imageLinks = images[j];
+                for (int k = 0; k < productNames.length; k++) {
+                    productRepository.save(new Product(
+                            productNames[k],
+                            productNames[k],
+                            imageLinks[k],
+                            productNames[k],
+                            productNames[k],
+                            (long) (Math.round(random.nextLong(100000) * 500) + 100),
+                            category
+                    ));
+                }
             }
         }
     }
@@ -146,25 +178,25 @@ public class DataLoader implements CommandLineRunner {
     private void initInstitutions() {
         List<Location> locations = locationRepository.findAll();
         institutionRepository.saveAll(List.of(
-                new Institution("Max Way", "Max Way", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
+                new Institution("Max Way", "Max Way", "", "","https://dostavkainfo.uz/wp-content/uploads/2020/03/oqtepa_lavash.jpg",
                         locations.get(0),
                         institutionTypeRepository.findById(1L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
                 ),
 
-                new Institution("Korzinka", "Korzinka", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
+                new Institution("Feed UP", "Feed UP", "", "","https://static.tildacdn.com/tild3433-3335-4663-b633-393138303263/feed_up.png",
                         locations.get(1),
-                        institutionTypeRepository.findById(3L).orElseThrow(),
+                        institutionTypeRepository.findById(1L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
                 ),
 
-                new Institution("Shopping", "Shopping", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
+                new Institution("Evos", "Evos", "", "","https://play-lh.googleusercontent.com/SAK0dhiUcvN5RBqClmWKb0bZbbn4Urs05yg_7-LtYlIs-SS0Ewvnzzi9v_X9sVKPD8hh",
                         locations.get(2),
-                        institutionTypeRepository.findById(4L).orElseThrow(),
+                        institutionTypeRepository.findById(1L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
                 ),
 
-                new Institution("Moida By Azan", "Moida By Azan", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
+                new Institution("Oqtepa Lavash", "Oqtepa Lavash", "", "","https://th.bing.com/th/id/OIP.com4sMfga2gwMCziijiREAHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7",
                         locations.get(3),
                         institutionTypeRepository.findById(2L).orElseThrow(),
                         userRepository.findById(1L).orElseThrow()
@@ -174,10 +206,9 @@ public class DataLoader implements CommandLineRunner {
 
     private void initInstitutionTypes() {
         institutionTypeRepository.saveAll(List.of(
-                new InstitutionType("Restaurant", "Restaurant", "All restaurants", ""),
-                new InstitutionType("Cafe", "Cafe", "All restaurants", ""),
-                new InstitutionType("Market", "Market", "All restaurants", ""),
-                new InstitutionType("MiniMarket", "MiniMarket", "All restaurants", "")
+                new InstitutionType("Kafe", "Kafe", "All restaurants", ""),
+                new InstitutionType("Restoran", "Restoran", "", ""),
+                new InstitutionType("Market", "Market", "", "")
         ));
     }
 
