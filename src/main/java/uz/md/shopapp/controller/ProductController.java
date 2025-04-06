@@ -29,7 +29,7 @@ public class ProductController {
     public static final String BASE_URL = AppConstants.BASE_URL + "product";
     private final ProductService productService;
 
-    @GetMapping("/category/{id}")
+    @PostMapping("/category/{id}")
     public ApiResult<List<ProductDTO>> getAllByCategory(@PathVariable Long id) {
         log.info("getAllByCategory called with category id {}", id);
         return productService.getAllByCategory(id);

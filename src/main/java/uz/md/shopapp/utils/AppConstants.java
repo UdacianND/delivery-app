@@ -75,7 +75,7 @@ public interface AppConstants {
     String BOT_TOKEN = "7885096181:AAHBr3wUs7qPNEocrycTmBrjNRgWZABatf4";
     String TELEGRAM_BOT_FULL_URL = TELEGRAM_BASE_URL.concat(BOT_TOKEN);
     String TELEGRAM_SEND_MESSAGE_URL = TELEGRAM_BOT_FULL_URL + "/sendMessage";
-    String GROUP_CHAT_ID = "@delivery_channel";
+    String GROUP_CHAT_ID = "@deliver_mario";
     String TELEGRAM_SEND_LOCATION_URL = TELEGRAM_BOT_FULL_URL + "/sendLocation?chat_id=" ;
 
     String BOT_STARTER_MESSAGE = "Salom, ushbu havolani oching";

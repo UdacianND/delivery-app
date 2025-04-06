@@ -44,7 +44,7 @@ public class ClientController {
         return clientService.getMyOrders(page);
     }
 
-    @GetMapping("/my-orders/clear")
+    @PostMapping("/my-orders/clear")
     @Operation(description = "Getting client orders")
     public ApiResult<Void> clearClientOrders() {
         return clientService.deleteMyOrders();

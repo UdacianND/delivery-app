@@ -42,7 +42,7 @@ public class CategoryController {
         return categoryService.getAllForInfo();
     }
 
-    @GetMapping("/institution/{id}")
+    @PostMapping("/institution/{id}")
     @Operation(description = "Get all categories by institution")
     public ApiResult<List<CategoryInfoDTO>> getAllByInstitution(@PathVariable Long id) {
         log.info("getting all categories by institution");

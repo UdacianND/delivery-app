@@ -50,7 +50,7 @@ public class InstitutionController {
         return institutionService.getAllForInfoByPage(page);
     }
 
-    @GetMapping("/all/by_type/{id}")
+    @PostMapping("/all/by_type/{id}")
     @Operation(description = "Get all institutions by type")
     public ApiResult<List<InstitutionInfoDTO>> getAllByType(@PathVariable("id") Long typeId) {
         log.info("getting all institutions by type");

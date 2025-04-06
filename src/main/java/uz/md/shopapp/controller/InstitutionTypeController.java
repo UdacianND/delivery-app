@@ -28,7 +28,7 @@ public class InstitutionTypeController {
 
     private final InstitutionTypeService institutionTypeService;
 
-    @GetMapping
+    @PostMapping
     @Operation(description = "Get all institutionTypes")
     public ApiResult<List<InstitutionTypeDTO>> getAll() {
         log.info("Getting all institutionTypes");

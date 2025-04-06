@@ -167,7 +167,7 @@ public class DataLoader implements CommandLineRunner {
                             imageLinks[k],
                             productNames[k],
                             productNames[k],
-                            (long) (Math.round(random.nextLong(100000) * 500) + 100),
+                            (long) (Math.round(random.nextLong(100) * 500) + 100),
                             category
                     ));
                 }
